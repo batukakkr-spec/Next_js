@@ -4,7 +4,35 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import aiAssistant from "@/assets/ai-assistant.jpg";
-import { Send, Sparkles, Sword } from "lucide-react";
+import { Send, Sparkles, Sword, Languages } from "lucide-react";
+
+type Lang = "en" | "mn";
+const T = {
+  en: {
+    badge: "▸ AI Companion",
+    subtitle: (lv?: number, xp?: number, max?: number) => `Lv.${lv} Hunter · ${xp}/${max} XP`,
+    greeting: "I am Jin, your System AI. I can analyze your level, propose a personalized quest plan, and assign quests for you. What's your goal today?",
+    placeholder: "Ask Jin to plan your day…",
+    thinking: "Jin is thinking…",
+    quick: "Quick prompts",
+    prompts: ["Plan my day with 3 quests", "What should I train this week?", "Suggest a focus session", "Surprise me"],
+    added: (n: number) => `⚔ ${n} quest(s) added`,
+    accepted: "Quest accepted",
+    langLabel: "Language",
+  },
+  mn: {
+    badge: "▸ AI Туслах",
+    subtitle: (lv?: number, xp?: number, max?: number) => `Lv.${lv} Анчин · ${xp}/${max} XP`,
+    greeting: "Сайн уу, би Жин — System AI. Чиний түвшинг шинжилж, өдрийн quest төлөвлөгөө гаргаж, шууд оноож өгч чадна. Өнөөдрийн зорилго чинь юу вэ?",
+    placeholder: "Жинд өдрийн төлөвлөгөө гаргуулах…",
+    thinking: "Жин бодож байна…",
+    quick: "Түргэн сонголт",
+    prompts: ["Өдрийн 3 quest төлөвлө", "Энэ долоо хоногт юу сургах вэ?", "Фокус session санал болго", "Гэнэтийн санаа өг"],
+    added: (n: number) => `⚔ ${n} quest нэмэгдлээ`,
+    accepted: "Quest хүлээн авлаа",
+    langLabel: "Хэл",
+  },
+} as const;
 
 export const Route = createFileRoute("/_app/ai")({
   component: AIPage,
@@ -18,16 +46,23 @@ interface Msg {
 
 function AIPage() {
   const { user, profile, refreshProfile } = useAuth();
+  const [lang, setLang] = useState<Lang>(() => {
+    if (typeof window === "undefined") return "en";
+    return (localStorage.getItem("jin-lang") as Lang) ?? "en";
+  });
+  const t = T[lang];
   const [messages, setMessages] = useState<Msg[]>([
-    {
-      role: "assistant",
-      content:
-        "I am Jin, your System AI. I can analyze your level, propose a personalized quest plan, and assign quests for you. What's your goal today?",
-    },
+    { role: "assistant", content: T[typeof window !== "undefined" ? ((localStorage.getItem("jin-lang") as Lang) ?? "en") : "en"].greeting },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
+
+  const switchLang = (l: Lang) => {
+    setLang(l);
+    localStorage.setItem("jin-lang", l);
+    setMessages([{ role: "assistant", content: T[l].greeting }]);
+  };
 
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" });
@@ -54,6 +89,7 @@ function AIPage() {
           },
           body: JSON.stringify({
             messages: next.map((m) => ({ role: m.role, content: m.content })),
+            language: lang,
           }),
         },
       );
@@ -64,7 +100,7 @@ function AIPage() {
         { role: "assistant", content: data.reply ?? "(no reply)", suggestions: data.suggestions },
       ]);
       if (data?.assigned?.length) {
-        toast.success(`⚔ ${data.assigned.length} quest(s) added`);
+        toast.success(t.added(data.assigned.length));
         await refreshProfile();
       }
     } catch (e: unknown) {
@@ -80,7 +116,7 @@ function AIPage() {
     if (!user) return;
     const { error } = await supabase.from("user_quests").insert({ user_id: user.id, quest_id: qid });
     if (error) { toast.error(error.message); return; }
-    toast.success("Quest accepted");
+    toast.success(t.accepted);
   };
 
   return (
@@ -89,11 +125,33 @@ function AIPage() {
         <img src={aiAssistant} alt="Jin" width={96} height={96}
           className="w-24 h-24 rounded-full object-cover border border-primary/40 animate-pulse-glow" loading="lazy" />
         <div className="flex-1 text-center sm:text-left">
-          <p className="text-xs uppercase tracking-[0.4em] text-primary-glow">▸ AI Companion</p>
+          <p className="text-xs uppercase tracking-[0.4em] text-primary-glow">{t.badge}</p>
           <h1 className="text-3xl font-bold glow-text">JIN — Smart Planner</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Lv.{profile?.level} Hunter · {profile?.xp}/{profile?.xp_to_next} XP
+            {t.subtitle(profile?.level, profile?.xp, profile?.xp_to_next)}
           </p>
+        </div>
+        {/* Language toggle — visible top-right */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-1">
+            <Languages className="w-3 h-3" /> {t.langLabel}
+          </span>
+          <div className="inline-flex rounded-md border border-primary/40 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => switchLang("en")}
+              className={`px-3 py-1.5 text-xs font-bold transition ${lang === "en" ? "bg-accent/40 text-foreground shadow-[0_0_12px_oklch(0.78_0.22_230/0.4)]" : "text-muted-foreground hover:bg-secondary/40"}`}
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              onClick={() => switchLang("mn")}
+              className={`px-3 py-1.5 text-xs font-bold transition border-l border-primary/40 ${lang === "mn" ? "bg-accent/40 text-foreground shadow-[0_0_12px_oklch(0.78_0.22_230/0.4)]" : "text-muted-foreground hover:bg-secondary/40"}`}
+            >
+              МН
+            </button>
+          </div>
         </div>
       </div>
 
@@ -128,7 +186,7 @@ function AIPage() {
               </div>
             ))}
             {loading && (
-              <div className="text-sm text-muted-foreground italic">Jin is thinking…</div>
+              <div className="text-sm text-muted-foreground italic">{t.thinking}</div>
             )}
           </div>
 
@@ -136,7 +194,7 @@ function AIPage() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Jin to plan your day…"
+              placeholder={t.placeholder}
               className="flex-1 bg-input/60 border border-border rounded-md px-3 py-2 text-sm"
               disabled={loading}
             />
@@ -148,13 +206,8 @@ function AIPage() {
         </div>
 
         <div className="glass-panel frame-corner p-4 space-y-2 h-fit">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Quick prompts</p>
-          {[
-            "Plan my day with 3 quests",
-            "What should I train this week?",
-            "Suggest a focus session",
-            "Surprise me",
-          ].map((p) => (
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{t.quick}</p>
+          {t.prompts.map((p) => (
             <button key={p} onClick={() => void send(p)}
               className="w-full text-left text-xs px-3 py-2 rounded border border-border hover:bg-secondary/40 transition flex items-center gap-2">
               <Sparkles className="w-3 h-3 text-primary-glow" /> {p}

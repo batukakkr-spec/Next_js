@@ -84,7 +84,7 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const { messages = [] } = await req.json();
+    const { messages = [], language = "en" } = await req.json();
 
     // Inject user context
     const { data: profile } = await supabase
@@ -93,9 +93,14 @@ Deno.serve(async (req: Request) => {
 
     const contextMsg = `Current Hunter context: name=${profile?.display_name ?? "Hunter"}, level=${profile?.level ?? 1}, xp=${profile?.xp ?? 0}/${profile?.xp_to_next ?? 100}, streak=${profile?.streak_days ?? 0} days.`;
 
+    const langMsg = language === "mn"
+      ? "IMPORTANT: Reply ONLY in Mongolian (Cyrillic). Бүх хариултаа Монгол хэлээр, Кирилл үсгээр бич. Quest нэрийг англиар үлдээж болно."
+      : "IMPORTANT: Reply ONLY in English.";
+
     const conversation = [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "system", content: contextMsg },
+      { role: "system", content: langMsg },
       ...messages,
     ];
 
