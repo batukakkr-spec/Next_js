@@ -72,9 +72,9 @@ Deno.serve(async (req: Request) => {
     const SUPABASE_PUBLISHABLE_KEY = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!;
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const authHeader = req.headers.get("Authorization") ?? "";
+    const userToken = req.headers.get("x-user-token") ?? req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "") ?? "";
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-      global: { headers: { Authorization: authHeader } },
+      global: { headers: userToken ? { Authorization: `Bearer ${userToken}` } : {} },
     });
     const { data: userData } = await supabase.auth.getUser();
     const user = userData?.user;
