@@ -2,8 +2,16 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { Sword } from "lucide-react";
+
+async function googleSignUp() {
+  const result = await lovable.auth.signInWithOAuth("google", {
+    redirect_uri: `${window.location.origin}/dashboard`,
+  });
+  if (result.error) toast.error(result.error.message ?? "Google sign-up failed");
+}
 
 export const Route = createFileRoute("/register")({
   component: RegisterPage,
