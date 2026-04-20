@@ -17,6 +17,8 @@ import { Route as AppQuestsRouteImport } from './routes/_app.quests'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppLeaderboardRouteImport } from './routes/_app.leaderboard'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppAiRouteImport } from './routes/_app.ai'
+import { Route as AppAdminRouteImport } from './routes/_app.admin'
 import { Route as AppAchievementsRouteImport } from './routes/_app.achievements'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -58,6 +60,16 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAiRoute = AppAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAchievementsRoute = AppAchievementsRouteImport.update({
   id: '/achievements',
   path: '/achievements',
@@ -69,6 +81,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/achievements': typeof AppAchievementsRoute
+  '/admin': typeof AppAdminRoute
+  '/ai': typeof AppAiRoute
   '/dashboard': typeof AppDashboardRoute
   '/leaderboard': typeof AppLeaderboardRoute
   '/profile': typeof AppProfileRoute
@@ -79,6 +93,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/achievements': typeof AppAchievementsRoute
+  '/admin': typeof AppAdminRoute
+  '/ai': typeof AppAiRoute
   '/dashboard': typeof AppDashboardRoute
   '/leaderboard': typeof AppLeaderboardRoute
   '/profile': typeof AppProfileRoute
@@ -91,6 +107,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_app/achievements': typeof AppAchievementsRoute
+  '/_app/admin': typeof AppAdminRoute
+  '/_app/ai': typeof AppAiRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/leaderboard': typeof AppLeaderboardRoute
   '/_app/profile': typeof AppProfileRoute
@@ -103,6 +121,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/achievements'
+    | '/admin'
+    | '/ai'
     | '/dashboard'
     | '/leaderboard'
     | '/profile'
@@ -113,6 +133,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/achievements'
+    | '/admin'
+    | '/ai'
     | '/dashboard'
     | '/leaderboard'
     | '/profile'
@@ -124,6 +146,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/_app/achievements'
+    | '/_app/admin'
+    | '/_app/ai'
     | '/_app/dashboard'
     | '/_app/leaderboard'
     | '/_app/profile'
@@ -195,6 +219,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/ai': {
+      id: '/_app/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AppAiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin': {
+      id: '/_app/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/achievements': {
       id: '/_app/achievements'
       path: '/achievements'
@@ -207,6 +245,8 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAchievementsRoute: typeof AppAchievementsRoute
+  AppAdminRoute: typeof AppAdminRoute
+  AppAiRoute: typeof AppAiRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -215,6 +255,8 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAchievementsRoute: AppAchievementsRoute,
+  AppAdminRoute: AppAdminRoute,
+  AppAiRoute: AppAiRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppLeaderboardRoute: AppLeaderboardRoute,
   AppProfileRoute: AppProfileRoute,
