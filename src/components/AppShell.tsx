@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
-import { Sword, LayoutDashboard, Trophy, Medal, User, Sparkles, Shield, LogOut } from "lucide-react";
+import { Sword, LayoutDashboard, Trophy, Medal, User, Sparkles, Shield, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { to: "/achievements", label: "Achievements", icon: Medal },
   { to: "/ai", label: "AI Planner", icon: Sparkles },
   { to: "/profile", label: "Profile", icon: User },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
