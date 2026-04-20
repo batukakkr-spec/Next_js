@@ -1,4 +1,4 @@
 project_id = "pxerfkletnhihjhdfoea"
 
 [functions.smart-planner]
-verify_jwt = true
+verify_jwt = false

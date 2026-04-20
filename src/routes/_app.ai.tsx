@@ -42,11 +42,23 @@ function AIPage() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("smart-planner", {
-        body: { messages: next.map((m) => ({ role: m.role, content: m.content })) },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      const { data: { session } } = await supabase.auth.getSession();
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/smart-planner`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            "x-user-token": session?.access_token ?? "",
+          },
+          body: JSON.stringify({
+            messages: next.map((m) => ({ role: m.role, content: m.content })),
+          }),
+        },
+      );
+      const data = await resp.json();
+      if (!resp.ok || data?.error) throw new Error(data?.error ?? `HTTP ${resp.status}`);
       setMessages((m) => [
         ...m,
         { role: "assistant", content: data.reply ?? "(no reply)", suggestions: data.suggestions },
