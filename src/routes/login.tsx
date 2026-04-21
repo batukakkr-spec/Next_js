@@ -6,6 +6,8 @@ import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { Sword } from "lucide-react";
 
+type RoleChoice = "admin" | "user" | "meal";
+
 async function googleSignIn() {
   const result = await lovable.auth.signInWithOAuth("google", {
     redirect_uri: `${window.location.origin}/dashboard`,
@@ -26,6 +28,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<RoleChoice>("user");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,14 +39,26 @@ function LoginPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword(parsed.data);
+    const { data: auth, error } = await supabase.auth.signInWithPassword(parsed.data);
+    if (error || !auth.user) {
+      setLoading(false);
+      toast.error(error?.message ?? "Login failed");
+      return;
+    }
+    // verify selected role
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", auth.user.id);
+    const hasRole = (roles ?? []).some((r) => r.role === role);
     setLoading(false);
-    if (error) {
-      toast.error(error.message);
+    if (!hasRole) {
+      await supabase.auth.signOut();
+      toast.error(`You don't have the ${role.toUpperCase()} role`);
       return;
     }
     toast.success("Welcome back, Hunter.");
-    navigate({ to: "/dashboard" });
+    navigate({ to: role === "admin" ? "/admin" : "/dashboard" });
   };
 
   return (
@@ -58,6 +73,25 @@ function LoginPage() {
           <h1 className="text-2xl font-bold glow-text mb-6">RE-ENTER THE GATE</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-2">Role</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(["admin", "user", "meal"] as RoleChoice[]).map((r) => (
+                  <button
+                    type="button"
+                    key={r}
+                    onClick={() => setRole(r)}
+                    className={`py-2 rounded-md text-xs uppercase tracking-widest border transition ${
+                      role === r
+                        ? "bg-accent/40 border-primary/60 text-primary-glow shadow-[0_0_12px_oklch(0.7_0.18_240/0.4)]"
+                        : "border-border text-muted-foreground hover:bg-input/40"
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div>
               <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Email</label>
               <input
