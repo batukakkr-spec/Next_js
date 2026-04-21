@@ -42,7 +42,7 @@ function LoginPage() {
     const { data: auth, error } = await supabase.auth.signInWithPassword(parsed.data);
     if (error || !auth.user) {
       setLoading(false);
-      toast.error(error.message);
+      toast.error(error?.message ?? "Login failed");
       return;
     }
     // verify selected role
