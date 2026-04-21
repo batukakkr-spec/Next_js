@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Shield, Plus, Trash2 } from "lucide-react";
+import { Shield, Plus, Trash2, Pencil, Save, X, Power } from "lucide-react";
 
 export const Route = createFileRoute("/_app/admin")({
   component: AdminPage,
@@ -35,6 +35,7 @@ function AdminPage() {
   const [quests, setQuests] = useState<Quest[]>([]);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [tab, setTab] = useState<"quests" | "users">("quests");
+  const [editing, setEditing] = useState<Quest | null>(null);
 
   // form
   const [form, setForm] = useState({
@@ -77,6 +78,27 @@ function AdminPage() {
     const { error } = await supabase.from("quests").delete().eq("id", id);
     if (error) { toast.error(error.message); return; }
     toast.success("Quest removed");
+    await load();
+  };
+
+  const toggleActive = async (q: Quest) => {
+    const { error } = await supabase.from("quests")
+      .update({ is_active: !q.is_active }).eq("id", q.id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(q.is_active ? "Quest deactivated" : "Quest activated");
+    await load();
+  };
+
+  const saveEdit = async () => {
+    if (!editing) return;
+    const { id, title, description, category, difficulty, xp_reward, target_value, unit, is_active } = editing;
+    const { error } = await supabase.from("quests").update({
+      title, description, category: category as never, difficulty: difficulty as never,
+      xp_reward, target_value, unit, is_active,
+    }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Quest updated");
+    setEditing(null);
     await load();
   };
 
@@ -143,26 +165,91 @@ function AdminPage() {
                   <th className="text-left p-3 hidden sm:table-cell">Category</th>
                   <th className="text-left p-3 hidden md:table-cell">Difficulty</th>
                   <th className="text-right p-3">XP</th>
-                  <th className="p-3 w-10"></th>
+                  <th className="p-3 w-32 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {quests.map((q) => (
                   <tr key={q.id} className="border-t border-border">
-                    <td className="p-3">{q.title}</td>
+                    <td className="p-3">
+                      <span className={q.is_active ? "" : "text-muted-foreground line-through"}>{q.title}</span>
+                    </td>
                     <td className="p-3 hidden sm:table-cell text-muted-foreground">{q.category}</td>
                     <td className="p-3 hidden md:table-cell text-primary-glow uppercase text-xs">{q.difficulty}</td>
                     <td className="p-3 text-right text-warning">+{q.xp_reward}</td>
                     <td className="p-3 text-right">
-                      <button onClick={() => removeQuest(q.id)} className="text-destructive hover:opacity-70">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="inline-flex items-center gap-2">
+                        <button onClick={() => toggleActive(q)} title={q.is_active ? "Deactivate" : "Activate"}
+                          className={q.is_active ? "text-primary-glow hover:opacity-70" : "text-muted-foreground hover:opacity-70"}>
+                          <Power className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => setEditing(q)} title="Edit" className="text-primary-glow hover:opacity-70">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => removeQuest(q.id)} title="Delete" className="text-destructive hover:opacity-70">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {editing && (
+            <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+              onClick={() => setEditing(null)}>
+              <div className="glass-panel frame-corner p-6 max-w-lg w-full grid sm:grid-cols-2 gap-3 animate-float-up"
+                onClick={(e) => e.stopPropagation()}>
+                <div className="sm:col-span-2 flex items-center justify-between">
+                  <h3 className="font-bold tracking-wider">▸ EDIT QUEST</h3>
+                  <button onClick={() => setEditing(null)} className="text-muted-foreground hover:text-foreground">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <input value={editing.title}
+                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  placeholder="Title"
+                  className="bg-input/60 border border-border rounded px-3 py-2 text-sm sm:col-span-2" />
+                <input value={editing.description ?? ""}
+                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  placeholder="Description"
+                  className="bg-input/60 border border-border rounded px-3 py-2 text-sm sm:col-span-2" />
+                <select value={editing.category}
+                  onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                  className="bg-input/60 border border-border rounded px-3 py-2 text-sm">
+                  {["fitness", "mind", "study", "work", "social", "creative"].map((c) => <option key={c}>{c}</option>)}
+                </select>
+                <select value={editing.difficulty}
+                  onChange={(e) => setEditing({ ...editing, difficulty: e.target.value })}
+                  className="bg-input/60 border border-border rounded px-3 py-2 text-sm">
+                  {["easy", "medium", "hard", "epic"].map((c) => <option key={c}>{c}</option>)}
+                </select>
+                <input type="number" min={1} value={editing.xp_reward}
+                  onChange={(e) => setEditing({ ...editing, xp_reward: +e.target.value })}
+                  placeholder="XP"
+                  className="bg-input/60 border border-border rounded px-3 py-2 text-sm" />
+                <input type="number" min={1} value={editing.target_value}
+                  onChange={(e) => setEditing({ ...editing, target_value: +e.target.value })}
+                  placeholder="Target"
+                  className="bg-input/60 border border-border rounded px-3 py-2 text-sm" />
+                <input value={editing.unit ?? ""}
+                  onChange={(e) => setEditing({ ...editing, unit: e.target.value })}
+                  placeholder="Unit"
+                  className="bg-input/60 border border-border rounded px-3 py-2 text-sm sm:col-span-2" />
+                <label className="sm:col-span-2 flex items-center gap-2 text-xs uppercase tracking-widest">
+                  <input type="checkbox" checked={editing.is_active}
+                    onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} />
+                  Active
+                </label>
+                <button onClick={saveEdit}
+                  className="btn-glow rounded py-2 text-sm font-semibold sm:col-span-2">
+                  <Save className="inline w-4 h-4 mr-1" /> Save Changes
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
 
