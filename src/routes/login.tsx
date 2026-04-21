@@ -6,7 +6,7 @@ import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { Sword } from "lucide-react";
 
-type RoleChoice = "admin" | "user" | "meal";
+type RoleChoice = "admin" | "user";
 
 async function googleSignIn() {
   const result = await lovable.auth.signInWithOAuth("google", {
@@ -75,8 +75,8 @@ function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-2">Role</label>
-              <div className="grid grid-cols-3 gap-2">
-                {(["admin", "user", "meal"] as RoleChoice[]).map((r) => (
+              <div className="grid grid-cols-2 gap-2">
+                {(["admin", "user"] as RoleChoice[]).map((r) => (
                   <button
                     type="button"
                     key={r}
