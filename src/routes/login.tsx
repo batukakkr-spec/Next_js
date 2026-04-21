@@ -33,12 +33,15 @@ function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     const parsed = schema.safeParse({ email, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
     }
     setLoading(true);
+    // ensure clean state (in case a previous session lingered)
+    await supabase.auth.signOut().catch(() => {});
     const { data: auth, error } = await supabase.auth.signInWithPassword(parsed.data);
     if (error || !auth.user) {
       setLoading(false);
@@ -54,11 +57,12 @@ function LoginPage() {
     setLoading(false);
     if (!hasRole) {
       await supabase.auth.signOut();
-      toast.error(`You don't have the ${role.toUpperCase()} role`);
+      toast.error(`This account does not have the ${role.toUpperCase()} role`);
       return;
     }
     toast.success("Welcome back, Hunter.");
-    navigate({ to: role === "admin" ? "/admin" : "/dashboard" });
+    // hard navigate to make sure auth state is picked up everywhere
+    window.location.href = role === "admin" ? "/admin" : "/dashboard";
   };
 
   return (
