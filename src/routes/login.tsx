@@ -31,9 +31,7 @@ function LoginPage() {
   const [role, setRole] = useState<RoleChoice>("user");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleSubmit = async () => {
     const parsed = schema.safeParse({ email, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
@@ -76,7 +74,7 @@ function LoginPage() {
           <p className="text-xs uppercase tracking-[0.4em] text-primary-glow mb-2">▸ System Login</p>
           <h1 className="text-2xl font-bold glow-text mb-6">RE-ENTER THE GATE</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={(e) => e.preventDefault()} noValidate className="space-y-4">
             <div>
               <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-2">Role</label>
               <div className="grid grid-cols-2 gap-2">
@@ -117,7 +115,8 @@ function LoginPage() {
               />
             </div>
             <button
-              type="submit"
+              type="button"
+              onClick={() => void handleSubmit()}
               disabled={loading}
               className="w-full btn-glow py-3 rounded-md font-semibold tracking-wider disabled:opacity-50"
             >
