@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { User } from "lucide-react";
+import { User, Camera, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/profile")({
   component: ProfilePage,
@@ -14,6 +14,30 @@ function ProfilePage() {
   const [displayName, setDisplayName] = useState(profile?.display_name ?? "");
   const [username, setUsername] = useState(profile?.username ?? "");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const uploadAvatar = async (file: File) => {
+    if (!profile) return;
+    if (!file.type.startsWith("image/")) { toast.error("Please choose an image"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Max 5MB"); return; }
+    setUploading(true);
+    const ext = file.name.split(".").pop() ?? "png";
+    const path = `${profile.user_id}/avatar-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) { setUploading(false); toast.error(upErr.message); return; }
+    const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+    const { error: updErr } = await supabase
+      .from("profiles")
+      .update({ avatar_url: pub.publicUrl })
+      .eq("user_id", profile.user_id);
+    setUploading(false);
+    if (updErr) { toast.error(updErr.message); return; }
+    toast.success("Avatar updated");
+    await refreshProfile();
+  };
 
   const save = async () => {
     if (!profile) return;
@@ -36,8 +60,34 @@ function ProfilePage() {
       </div>
 
       <div className="glass-panel frame-corner p-6 flex flex-col sm:flex-row gap-6 items-center">
-        <div className="w-24 h-24 rounded-full btn-glow flex items-center justify-center">
-          <User className="w-10 h-10" />
+        <div className="relative group">
+          <button
+            type="button"
+            onClick={() => fileInput.current?.click()}
+            disabled={uploading}
+            className="w-24 h-24 rounded-full btn-glow flex items-center justify-center overflow-hidden relative"
+            title="Change avatar"
+          >
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+            ) : (
+              <User className="w-10 h-10" />
+            )}
+            <span className="absolute inset-0 bg-background/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+              {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5 text-primary-glow" />}
+            </span>
+          </button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) void uploadAvatar(f);
+              e.target.value = "";
+            }}
+          />
         </div>
         <div className="flex-1 text-center sm:text-left">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">Hunter</p>
