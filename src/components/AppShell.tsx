@@ -1,6 +1,6 @@
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
-import { LayoutDashboard, Trophy, Medal, User, Sparkles, Shield, LogOut, Settings, Swords } from "lucide-react";
+import { LayoutDashboard, Trophy, Medal, User, Sparkles, Shield, Settings, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
 import appLogo from "@/assets/app-logo.png";
 
@@ -15,8 +15,7 @@ const navItems = [
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { profile, hasRole, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { profile, hasRole } = useAuth();
   const loc = useLocation();
 
   const xpPct = profile ? Math.min(100, (profile.xp / profile.xp_to_next) * 100) : 0;
@@ -87,13 +86,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           )}
         </nav>
-
-        <button
-          onClick={async () => { await signOut(); navigate({ to: "/login" }); }}
-          className="m-3 flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition hex-cut border border-transparent hover:border-destructive/40"
-        >
-          <LogOut className="w-4 h-4" /> Leave System
-        </button>
       </aside>
 
       <main className="relative z-10 flex-1 p-4 lg:p-8 max-w-full overflow-x-hidden">
