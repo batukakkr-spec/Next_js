@@ -31,9 +31,13 @@ export const Route = createRootRoute({
       { property: "og:description", content: "Awaken your potential. Complete quests, gain XP, level up." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: "/app-logo.png" },
+      { name: "twitter:image", content: "/app-logo.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/png", href: "/app-logo.png" },
+      { rel: "apple-touch-icon", href: "/app-logo.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

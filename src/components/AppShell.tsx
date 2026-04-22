@@ -1,7 +1,8 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
-import { Dumbbell, LayoutDashboard, Trophy, Medal, User, Sparkles, Shield, LogOut, Settings, Swords } from "lucide-react";
+import { LayoutDashboard, Trophy, Medal, User, Sparkles, Shield, LogOut, Settings, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
+import appLogo from "@/assets/app-logo.png";
 
 const navItems = [
   { to: "/dashboard", label: "Status Window", icon: LayoutDashboard },
@@ -26,10 +27,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Sidebar */}
       <aside className="relative z-10 lg:w-72 lg:min-h-screen border-b lg:border-b-0 lg:border-r border-primary/30 flex flex-col bg-[oklch(0.10_0.04_255/0.85)] backdrop-blur-xl">
         <div className="p-5 border-b border-primary/20">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-10 h-10 hex-cut btn-glow flex items-center justify-center">
-              <Dumbbell className="w-5 h-5" />
-            </div>
+          <Link to="/dashboard" className="flex items-center gap-3">
+            <img
+              src={appLogo}
+              alt="Leveling logo"
+              className="w-11 h-11 object-contain drop-shadow-[0_0_12px_oklch(0.78_0.22_230/0.7)]"
+            />
             <div>
               <h1 className="text-lg font-bold glow-text tracking-[0.25em]">LEVELING</h1>
               <p className="text-[10px] system-label text-primary-glow/80">▸ Hunter System v2</p>
