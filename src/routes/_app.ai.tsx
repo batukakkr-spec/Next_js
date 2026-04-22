@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
-import aiAssistant from "@/assets/ai-assistant.jpg";
+import aiAssistant from "@/assets/jin-companion.webp";
 import { Send, Sparkles, Sword, Languages } from "lucide-react";
 
 type Lang = "en" | "mn";
