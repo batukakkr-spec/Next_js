@@ -24,10 +24,10 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "LEVELING — Gamified Quest System" },
+      { title: "ХҮЧТРЕК — Gamified Quest System" },
       { name: "description", content: "Gamified self-improvement system. Complete daily quests, level up, climb the leaderboard." },
       { name: "author", content: "Indra Cyber Institute" },
-      { property: "og:title", content: "LEVELING — Gamified Quest System" },
+      { property: "og:title", content: "ХҮЧТРЕК — Gamified Quest System" },
       { property: "og:description", content: "Awaken your potential. Complete quests, gain XP, level up." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
