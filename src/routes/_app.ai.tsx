@@ -123,7 +123,7 @@ function AIPage() {
     <div className="space-y-6 animate-float-up">
       <div className="glass-panel frame-corner p-6 flex flex-col sm:flex-row gap-6 items-center">
         <img src={aiAssistant} alt="Jin" width={96} height={96}
-          className="w-24 h-24 rounded-full object-cover border border-primary/40 animate-pulse-glow" loading="lazy" />
+          className="w-24 h-24 rounded-full object-cover object-top border border-primary/40 animate-pulse-glow shrink-0" loading="lazy" />
         <div className="flex-1 text-center sm:text-left">
           <p className="text-xs uppercase tracking-[0.4em] text-primary-glow">{t.badge}</p>
           <h1 className="text-3xl font-bold glow-text">JIN — Smart Planner</h1>
