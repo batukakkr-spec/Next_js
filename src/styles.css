@@ -2,6 +2,9 @@
 @source "../src";
 @import "tw-animate-css";
 
+/* Solo Leveling System fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -42,56 +45,56 @@
 :root {
   --radius: 0.5rem;
 
-  --background: oklch(0.16 0.04 260);
-  --foreground: oklch(0.96 0.02 240);
+  --background: oklch(0.10 0.03 255);
+  --foreground: oklch(0.97 0.02 220);
 
-  --panel: oklch(0.22 0.05 258);
+  --panel: oklch(0.14 0.04 255);
   --panel-foreground: oklch(0.96 0.02 240);
 
-  --card: oklch(0.20 0.05 258);
+  --card: oklch(0.13 0.04 255);
   --card-foreground: oklch(0.96 0.02 240);
 
-  --popover: oklch(0.20 0.05 258);
+  --popover: oklch(0.13 0.04 255);
   --popover-foreground: oklch(0.96 0.02 240);
 
-  --primary: oklch(0.70 0.20 240);
-  --primary-foreground: oklch(0.10 0.04 260);
-  --primary-glow: oklch(0.78 0.22 230);
+  --primary: oklch(0.78 0.18 220);
+  --primary-foreground: oklch(0.08 0.03 255);
+  --primary-glow: oklch(0.85 0.22 215);
 
-  --secondary: oklch(0.28 0.06 258);
+  --secondary: oklch(0.18 0.05 255);
   --secondary-foreground: oklch(0.95 0.02 240);
 
-  --muted: oklch(0.26 0.04 260);
-  --muted-foreground: oklch(0.70 0.04 250);
+  --muted: oklch(0.18 0.04 258);
+  --muted-foreground: oklch(0.72 0.05 230);
 
-  --accent: oklch(0.55 0.22 260);
-  --accent-foreground: oklch(0.98 0.02 240);
+  --accent: oklch(0.60 0.22 240);
+  --accent-foreground: oklch(0.98 0.02 220);
 
   --destructive: oklch(0.62 0.24 25);
   --destructive-foreground: oklch(0.98 0.02 240);
 
-  --success: oklch(0.72 0.20 145);
-  --success-foreground: oklch(0.10 0.04 260);
+  --success: oklch(0.78 0.20 165);
+  --success-foreground: oklch(0.08 0.03 255);
 
-  --warning: oklch(0.80 0.18 80);
-  --warning-foreground: oklch(0.10 0.04 260);
+  --warning: oklch(0.85 0.18 85);
+  --warning-foreground: oklch(0.08 0.03 255);
 
-  --border: oklch(0.45 0.10 250 / 0.35);
-  --input: oklch(0.30 0.05 260);
-  --ring: oklch(0.70 0.20 240);
+  --border: oklch(0.78 0.18 220 / 0.40);
+  --input: oklch(0.18 0.05 255);
+  --ring: oklch(0.85 0.22 215);
 
   /* Gradients & shadows */
-  --gradient-primary: linear-gradient(135deg, oklch(0.55 0.22 260), oklch(0.78 0.22 230));
-  --gradient-panel: linear-gradient(180deg, oklch(0.22 0.06 258 / 0.85), oklch(0.16 0.05 260 / 0.9));
-  --gradient-glow: radial-gradient(circle at 50% 0%, oklch(0.70 0.22 240 / 0.35), transparent 70%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.55 0.22 240), oklch(0.85 0.22 215));
+  --gradient-panel: linear-gradient(180deg, oklch(0.16 0.05 255 / 0.92), oklch(0.10 0.04 255 / 0.96));
+  --gradient-glow: radial-gradient(circle at 50% 0%, oklch(0.85 0.22 215 / 0.45), transparent 70%);
 
-  --shadow-glow: 0 0 30px oklch(0.70 0.22 240 / 0.35), 0 0 60px oklch(0.55 0.22 260 / 0.15);
-  --shadow-panel: 0 10px 40px -10px oklch(0.10 0.04 260 / 0.8), inset 0 1px 0 oklch(0.70 0.20 240 / 0.2);
-  --shadow-frame: 0 0 0 1px oklch(0.55 0.22 260 / 0.45), 0 0 20px oklch(0.70 0.22 240 / 0.25);
+  --shadow-glow: 0 0 24px oklch(0.85 0.22 215 / 0.55), 0 0 60px oklch(0.55 0.22 240 / 0.25);
+  --shadow-panel: 0 10px 40px -10px oklch(0.05 0.03 255 / 0.9), inset 0 1px 0 oklch(0.85 0.22 215 / 0.25);
+  --shadow-frame: 0 0 0 1px oklch(0.85 0.22 215 / 0.55), 0 0 24px oklch(0.85 0.22 215 / 0.35);
 }
 
 .dark {
-  --background: oklch(0.16 0.04 260);
+  --background: oklch(0.10 0.03 255);
   --foreground: oklch(0.96 0.02 240);
 }
 
@@ -109,38 +112,55 @@
 
   body {
     background-image:
-      radial-gradient(ellipse at 20% -10%, oklch(0.45 0.18 250 / 0.25), transparent 60%),
-      radial-gradient(ellipse at 80% 110%, oklch(0.55 0.22 260 / 0.18), transparent 60%);
+      linear-gradient(oklch(0.85 0.22 215 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.85 0.22 215 / 0.04) 1px, transparent 1px),
+      radial-gradient(ellipse at 20% -10%, oklch(0.55 0.22 240 / 0.35), transparent 60%),
+      radial-gradient(ellipse at 80% 110%, oklch(0.60 0.22 240 / 0.25), transparent 60%);
+    background-size: 48px 48px, 48px 48px, auto, auto;
     background-attachment: fixed;
     min-height: 100vh;
   }
 
   h1, h2, h3, h4 {
-    font-family: 'Cinzel', 'Rajdhani', serif;
-    letter-spacing: 0.02em;
+    font-family: 'Orbitron', 'Rajdhani', sans-serif;
+    letter-spacing: 0.04em;
+  }
+
+  code, pre, .font-mono, .system-mono {
+    font-family: 'Share Tech Mono', ui-monospace, monospace;
   }
 }
 
 @layer components {
   .glass-panel {
     background: var(--gradient-panel);
-    border: 1px solid oklch(0.55 0.22 260 / 0.35);
+    border: 1px solid oklch(0.85 0.22 215 / 0.45);
     box-shadow: var(--shadow-panel);
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius-lg);
+    backdrop-filter: blur(14px);
+    border-radius: 2px;
     position: relative;
+    clip-path: polygon(
+      14px 0,
+      calc(100% - 14px) 0,
+      100% 14px,
+      100% calc(100% - 14px),
+      calc(100% - 14px) 100%,
+      14px 100%,
+      0 calc(100% - 14px),
+      0 14px
+    );
   }
   .glass-panel::before {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, oklch(0.78 0.22 230 / 0.6), transparent 50%, oklch(0.55 0.22 260 / 0.4));
+    background: linear-gradient(135deg, oklch(0.85 0.22 215 / 0.9), transparent 50%, oklch(0.55 0.22 240 / 0.6));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude;
     pointer-events: none;
+    clip-path: inherit;
   }
 
   .frame-corner {
@@ -149,22 +169,25 @@
   .frame-corner::after {
     content: "";
     position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background:
-      linear-gradient(to right, oklch(0.78 0.22 230) 0 12px, transparent 12px) top left / 12px 2px no-repeat,
-      linear-gradient(to bottom, oklch(0.78 0.22 230) 0 12px, transparent 12px) top left / 2px 12px no-repeat,
-      linear-gradient(to left, oklch(0.78 0.22 230) 0 12px, transparent 12px) top right / 12px 2px no-repeat,
-      linear-gradient(to bottom, oklch(0.78 0.22 230) 0 12px, transparent 12px) top right / 2px 12px no-repeat,
-      linear-gradient(to right, oklch(0.78 0.22 230) 0 12px, transparent 12px) bottom left / 12px 2px no-repeat,
-      linear-gradient(to top, oklch(0.78 0.22 230) 0 12px, transparent 12px) bottom left / 2px 12px no-repeat,
-      linear-gradient(to left, oklch(0.78 0.22 230) 0 12px, transparent 12px) bottom right / 12px 2px no-repeat,
-      linear-gradient(to top, oklch(0.78 0.22 230) 0 12px, transparent 12px) bottom right / 2px 12px no-repeat;
+    inset: 4px;
     pointer-events: none;
+    background:
+      linear-gradient(to right, oklch(0.92 0.22 215) 0 18px, transparent 18px) top left / 18px 2px no-repeat,
+      linear-gradient(to bottom, oklch(0.92 0.22 215) 0 18px, transparent 18px) top left / 2px 18px no-repeat,
+      linear-gradient(to left, oklch(0.92 0.22 215) 0 18px, transparent 18px) top right / 18px 2px no-repeat,
+      linear-gradient(to bottom, oklch(0.92 0.22 215) 0 18px, transparent 18px) top right / 2px 18px no-repeat,
+      linear-gradient(to right, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom left / 18px 2px no-repeat,
+      linear-gradient(to top, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom left / 2px 18px no-repeat,
+      linear-gradient(to left, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom right / 18px 2px no-repeat,
+      linear-gradient(to top, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom right / 2px 18px no-repeat;
+    filter: drop-shadow(0 0 6px oklch(0.85 0.22 215 / 0.8));
   }
 
   .glow-text {
-    text-shadow: 0 0 12px oklch(0.78 0.22 230 / 0.6), 0 0 30px oklch(0.55 0.22 260 / 0.4);
+    text-shadow:
+      0 0 8px oklch(0.92 0.22 215 / 0.85),
+      0 0 24px oklch(0.78 0.22 220 / 0.7),
+      0 0 48px oklch(0.55 0.22 240 / 0.5);
   }
 
   .btn-glow {
@@ -180,34 +203,66 @@
   }
 
   .xp-bar {
-    height: 10px;
-    background: oklch(0.20 0.04 260);
-    border: 1px solid oklch(0.55 0.22 260 / 0.35);
-    border-radius: 999px;
+    height: 12px;
+    background: oklch(0.12 0.04 255);
+    border: 1px solid oklch(0.85 0.22 215 / 0.55);
+    border-radius: 2px;
     overflow: hidden;
     position: relative;
+    box-shadow: inset 0 0 8px oklch(0.05 0.03 255 / 0.8);
   }
   .xp-bar > div {
     height: 100%;
-    background: linear-gradient(90deg, oklch(0.78 0.22 230), oklch(0.72 0.20 145));
-    box-shadow: 0 0 12px oklch(0.78 0.22 230 / 0.7);
+    background: linear-gradient(90deg, oklch(0.85 0.22 215), oklch(0.92 0.22 200));
+    box-shadow: 0 0 14px oklch(0.92 0.22 215 / 0.95);
+    position: relative;
     transition: width 600ms ease;
+  }
+  .xp-bar > div::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0 6px,
+      oklch(0.05 0.03 255 / 0.25) 6px 7px
+    );
   }
 
   .scanline {
     background-image: repeating-linear-gradient(
       to bottom,
       transparent 0,
-      transparent 3px,
-      oklch(0.78 0.22 230 / 0.04) 3px,
-      oklch(0.78 0.22 230 / 0.04) 4px
+      transparent 2px,
+      oklch(0.85 0.22 215 / 0.06) 2px,
+      oklch(0.85 0.22 215 / 0.06) 3px
+    );
+  }
+
+  .system-label {
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: oklch(0.92 0.22 215);
+  }
+
+  .hex-cut {
+    clip-path: polygon(
+      14px 0,
+      calc(100% - 14px) 0,
+      100% 14px,
+      100% calc(100% - 14px),
+      calc(100% - 14px) 100%,
+      14px 100%,
+      0 calc(100% - 14px),
+      0 14px
     );
   }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px oklch(0.78 0.22 230 / 0.3); }
-  50% { box-shadow: 0 0 40px oklch(0.78 0.22 230 / 0.7); }
+  0%, 100% { box-shadow: 0 0 20px oklch(0.85 0.22 215 / 0.4); }
+  50% { box-shadow: 0 0 50px oklch(0.92 0.22 215 / 0.9); }
 }
 .animate-pulse-glow { animation: pulse-glow 2.4s ease-in-out infinite; }
 
@@ -216,3 +271,37 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-float-up { animation: float-up 400ms ease-out both; }
+
+@keyframes system-scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10%, 90% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+.animate-system-scan {
+  position: relative;
+  overflow: hidden;
+}
+.animate-system-scan::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    oklch(0.92 0.22 215 / 0.18) 50%,
+    transparent
+  );
+  animation: system-scan 3.6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  47% { opacity: 1; }
+  48% { opacity: 0.55; }
+  49% { opacity: 1; }
+  62% { opacity: 1; }
+  63% { opacity: 0.7; }
+  64% { opacity: 1; }
+}
+.animate-flicker { animation: flicker 4s infinite; }
