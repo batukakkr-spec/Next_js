@@ -68,7 +68,7 @@ function LoginPage() {
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
           <Sword className="w-6 h-6 text-primary-glow" />
-          <span className="font-bold tracking-widest glow-text">ХҮЧТРЕК</span>
+          <span className="font-bold tracking-widest glow-text">XuchTrack</span>
         </Link>
         <div className="glass-panel frame-corner p-8 animate-float-up">
           <p className="text-xs uppercase tracking-[0.4em] text-primary-glow mb-2">▸ System Login</p>

@@ -29,11 +29,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link to="/dashboard" className="flex items-center gap-3">
             <img
               src={appLogo}
-              alt="Хүчтрек logo"
+              alt="XuchTrack logo"
               className="w-11 h-11 object-contain drop-shadow-[0_0_12px_oklch(0.78_0.22_230/0.7)]"
             />
             <div>
-              <h1 className="text-lg font-bold glow-text tracking-[0.25em]">ХҮЧТРЕК</h1>
+              <h1 className="text-lg font-bold glow-text tracking-[0.25em]">XuchTrack</h1>
               <p className="text-[10px] system-label text-primary-glow/80">▸ Hunter System v2</p>
             </div>
           </Link>
