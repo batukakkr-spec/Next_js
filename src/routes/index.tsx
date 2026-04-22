@@ -40,7 +40,7 @@ function Landing() {
             <Dumbbell className="w-4 h-4" />
           </div>
           <div className="leading-tight">
-            <span className="font-bold tracking-[0.3em] glow-text">LEVELING</span>
+            <span className="font-bold tracking-[0.3em] glow-text">ХҮЧТРЕК</span>
             <p className="system-label text-[9px] text-primary-glow/80">▸ Hunter Fitness System</p>
           </div>
         </div>
@@ -140,7 +140,7 @@ function Landing() {
       </section>
 
       <footer className="border-t border-primary/20 py-6 text-center system-label text-[10px] text-muted-foreground">
-        LEVELING © {new Date().getFullYear()} — Indra Cyber Institute Final Project
+        ХҮЧТРЕК © {new Date().getFullYear()} — Indra Cyber Institute Final Project
       </footer>
     </div>
   );
