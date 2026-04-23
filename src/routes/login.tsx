@@ -4,7 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { Sword } from "lucide-react";
+import { Sword, Shield, Trophy, Zap } from "lucide-react";
 
 type RoleChoice = "admin" | "user";
 
@@ -64,9 +64,55 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {/* LEFT — Brand / Hero panel */}
+      <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden border-r border-border bg-[radial-gradient(circle_at_20%_20%,oklch(0.7_0.18_240/0.18),transparent_60%),radial-gradient(circle_at_80%_80%,oklch(0.65_0.2_280/0.15),transparent_55%)]">
+          <div className="absolute inset-0 pointer-events-none opacity-[0.07] bg-[linear-gradient(to_right,oklch(0.7_0.18_240)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.7_0.18_240)_1px,transparent_1px)] bg-[size:40px_40px]" />
+          <Link to="/" className="relative flex items-center gap-2">
+            <Sword className="w-7 h-7 text-primary-glow" />
+            <span className="text-xl font-bold tracking-[0.3em] glow-text">XuchTrack</span>
+          </Link>
+
+          <div className="relative space-y-6 max-w-md">
+            <p className="text-xs uppercase tracking-[0.4em] text-primary-glow">▸ Hunter System</p>
+            <h2 className="text-4xl xl:text-5xl font-bold leading-tight glow-text">
+              Level up your real life — one quest at a time.
+            </h2>
+            <p className="text-muted-foreground text-base leading-relaxed">
+              Track quests, gain XP, climb the leaderboard, and unlock achievements as you become a stronger version of yourself.
+            </p>
+
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-9 h-9 rounded-md border border-primary/40 bg-accent/30 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-primary-glow" />
+                </div>
+                <span className="text-muted-foreground">Daily quests &amp; streaks</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-9 h-9 rounded-md border border-primary/40 bg-accent/30 flex items-center justify-center">
+                  <Trophy className="w-4 h-4 text-primary-glow" />
+                </div>
+                <span className="text-muted-foreground">Achievements &amp; ranks</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-9 h-9 rounded-md border border-primary/40 bg-accent/30 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-primary-glow" />
+                </div>
+                <span className="text-muted-foreground">AI-powered smart planner</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="relative text-xs text-muted-foreground tracking-widest">
+            © {new Date().getFullYear()} XUCHTRACK SYSTEM
+          </p>
+      </div>
+
+      {/* RIGHT — Form panel */}
+      <div className="flex items-center justify-center px-6 py-12 sm:px-12">
+        <div className="w-full max-w-md">
+        <Link to="/" className="lg:hidden flex items-center justify-center gap-2 mb-8">
           <Sword className="w-6 h-6 text-primary-glow" />
           <span className="font-bold tracking-widest glow-text">XuchTrack</span>
         </Link>
@@ -144,6 +190,7 @@ function LoginPage() {
             <Link to="/register" className="text-primary-glow hover:underline">Awaken now</Link>
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
