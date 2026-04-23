@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import heroBg from "@/assets/hero-bg.jpg";
-import aiAssistant from "@/assets/ai-assistant.jpg";
+import aiAssistant from "@/assets/ai-trainer.webp";
 import { Dumbbell, Trophy, Brain, Swords, HeartPulse, Flame } from "lucide-react";
 
 export const Route = createFileRoute("/")({
