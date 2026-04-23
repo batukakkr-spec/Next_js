@@ -37,15 +37,15 @@ interface Workout {
 }
 
 const MUSCLE_COLORS: Record<string, string> = {
-  ABS: "from-blue-500/30 to-blue-700/10",
-  BICEPS: "from-blue-500/30 to-blue-700/10",
-  TRICEPS: "from-blue-500/30 to-blue-700/10",
-  BACK: "from-blue-500/30 to-blue-700/10",
-  CHEST: "from-blue-500/30 to-blue-700/10",
-  GLUTES: "from-blue-500/30 to-blue-700/10",
-  QUADS: "from-blue-500/30 to-blue-700/10",
-  CARDIO: "from-orange-500/30 to-red-700/10",
-  MIND: "from-purple-500/30 to-indigo-700/10",
+  ABS: "from-cyan-500/25 via-cyan-400/10 to-transparent",
+  BICEPS: "from-sky-500/25 via-sky-400/10 to-transparent",
+  TRICEPS: "from-indigo-500/25 via-indigo-400/10 to-transparent",
+  BACK: "from-violet-500/25 via-violet-400/10 to-transparent",
+  CHEST: "from-blue-500/30 via-blue-400/10 to-transparent",
+  GLUTES: "from-fuchsia-500/25 via-fuchsia-400/10 to-transparent",
+  QUADS: "from-emerald-500/25 via-emerald-400/10 to-transparent",
+  CARDIO: "from-orange-500/30 via-red-500/15 to-transparent",
+  MIND: "from-purple-500/30 via-indigo-500/15 to-transparent",
 };
 
 function buildWorkout(q: Quest): Workout {
@@ -129,24 +129,104 @@ function buildWorkout(q: Quest): Workout {
 // Mini SVG body diagram with highlighted muscle group
 function BodyDiagram({ muscle }: { muscle: string }) {
   const isBack = muscle === "BACK" || muscle === "GLUTES";
-  const hl = (m: string) => muscle === m ? "fill-primary" : "fill-muted-foreground/30";
+  const ON = "fill-primary drop-shadow-[0_0_4px_oklch(0.7_0.18_240)]";
+  const OFF = "fill-muted-foreground/15";
+  const STROKE = "stroke-primary/40";
+  const hl = (m: string) => (muscle === m ? ON : OFF);
+  // For back view, BACK highlights upper torso, GLUTES highlights hips
   return (
-    <svg viewBox="0 0 80 120" className="w-20 h-28">
+    <svg viewBox="0 0 80 120" className="w-20 h-28 shrink-0">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="oklch(0.75 0.2 240)" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="oklch(0.75 0.2 240)" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      {/* aura */}
+      <ellipse cx="40" cy="60" rx="38" ry="58" fill="url(#glow)" opacity="0.25" />
+
       {/* head */}
-      <circle cx="40" cy="12" r="8" className="fill-muted-foreground/40" />
-      {/* torso */}
-      <path d="M25 22 L55 22 L58 60 L50 70 L30 70 L22 60 Z" className="fill-muted-foreground/25" />
-      {/* arms */}
-      <path d="M22 24 L14 55 L20 56 L26 28 Z" className={hl("BICEPS") + (isBack ? " " + hl("TRICEPS") : "")} />
-      <path d="M58 24 L66 55 L60 56 L54 28 Z" className={hl("BICEPS") + (isBack ? " " + hl("TRICEPS") : "")} />
-      {/* legs */}
-      <path d="M30 70 L28 110 L36 110 L40 72 Z" className={hl("QUADS")} />
-      <path d="M50 70 L52 110 L44 110 L40 72 Z" className={hl("QUADS")} />
-      {/* highlighted regions */}
-      {muscle === "CHEST" && <path d="M28 28 L52 28 L50 42 L30 42 Z" className="fill-primary" />}
-      {muscle === "ABS" && <rect x="34" y="42" width="12" height="20" rx="2" className="fill-primary" />}
-      {muscle === "BACK" && <path d="M30 26 L50 26 L48 50 L32 50 Z" className="fill-primary" />}
-      {muscle === "GLUTES" && <rect x="30" y="62" width="20" height="10" rx="3" className="fill-primary" />}
+      <circle cx="40" cy="11" r="7" className="fill-muted-foreground/40" />
+      <path d="M34 18 L46 18 L45 22 L35 22 Z" className="fill-muted-foreground/30" />
+
+      {/* neck/traps */}
+      <path d="M36 22 L44 22 L48 28 L32 28 Z" className={isBack ? hl("BACK") : "fill-muted-foreground/25"} />
+
+      {/* torso silhouette */}
+      <path d="M28 26 L52 26 L56 42 L54 60 L48 70 L32 70 L26 60 L24 42 Z"
+        className="fill-muted-foreground/15" />
+
+      {/* shoulders/deltoids */}
+      <ellipse cx="24" cy="30" rx="6" ry="5" className={hl("BICEPS")} />
+      <ellipse cx="56" cy="30" rx="6" ry="5" className={hl("BICEPS")} />
+
+      {/* upper arms (biceps front / triceps back) */}
+      <path d="M18 32 L14 52 L20 54 L24 34 Z" className={hl(isBack ? "TRICEPS" : "BICEPS")} />
+      <path d="M62 32 L66 52 L60 54 L56 34 Z" className={hl(isBack ? "TRICEPS" : "BICEPS")} />
+
+      {/* forearms */}
+      <path d="M14 52 L12 68 L18 68 L20 54 Z" className="fill-muted-foreground/20" />
+      <path d="M66 52 L68 68 L62 68 L60 54 Z" className="fill-muted-foreground/20" />
+
+      {/* CHEST (front only) */}
+      {!isBack && (
+        <>
+          <path d="M30 30 L40 32 L40 44 L30 44 Z" className={hl("CHEST")} />
+          <path d="M50 30 L40 32 L40 44 L50 44 Z" className={hl("CHEST")} />
+        </>
+      )}
+
+      {/* BACK (back only - lats) */}
+      {isBack && (
+        <>
+          <path d="M28 28 L40 30 L40 56 L30 58 L26 44 Z" className={hl("BACK")} />
+          <path d="M52 28 L40 30 L40 56 L50 58 L54 44 Z" className={hl("BACK")} />
+        </>
+      )}
+
+      {/* ABS (front 6-pack) */}
+      {!isBack && (
+        <g className={hl("ABS")}>
+          <rect x="34" y="44" width="5" height="6" rx="1" />
+          <rect x="41" y="44" width="5" height="6" rx="1" />
+          <rect x="34" y="51" width="5" height="6" rx="1" />
+          <rect x="41" y="51" width="5" height="6" rx="1" />
+          <rect x="34" y="58" width="5" height="7" rx="1" />
+          <rect x="41" y="58" width="5" height="7" rx="1" />
+        </g>
+      )}
+
+      {/* GLUTES (back only) */}
+      {isBack && (
+        <>
+          <ellipse cx="35" cy="68" rx="6" ry="5" className={hl("GLUTES")} />
+          <ellipse cx="45" cy="68" rx="6" ry="5" className={hl("GLUTES")} />
+        </>
+      )}
+
+      {/* QUADS / hamstrings (legs) */}
+      <path d="M30 70 L28 92 L36 92 L39 72 Z" className={hl("QUADS")} />
+      <path d="M50 70 L52 92 L44 92 L41 72 Z" className={hl("QUADS")} />
+
+      {/* calves */}
+      <path d="M28 92 L29 112 L35 112 L36 92 Z" className="fill-muted-foreground/20" />
+      <path d="M52 92 L51 112 L45 112 L44 92 Z" className="fill-muted-foreground/20" />
+
+      {/* outline stroke */}
+      <path d="M28 26 L52 26 L56 42 L54 60 L48 70 L32 70 L26 60 L24 42 Z"
+        className={STROKE} fill="none" strokeWidth="0.5" />
+
+      {/* CARDIO icon overlay - heart pulse */}
+      {muscle === "CARDIO" && (
+        <g className="fill-orange-400 stroke-orange-400" stroke="currentColor" strokeWidth="1.5" fill="none">
+          <path d="M30 50 L34 50 L36 44 L40 56 L44 48 L46 50 L50 50" />
+        </g>
+      )}
+
+      {/* MIND overlay - brain glow on head */}
+      {muscle === "MIND" && (
+        <circle cx="40" cy="11" r="9" className="fill-purple-400/60 drop-shadow-[0_0_6px_oklch(0.7_0.2_300)]" />
+      )}
     </svg>
   );
 }
