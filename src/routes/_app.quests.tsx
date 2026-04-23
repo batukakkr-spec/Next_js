@@ -265,6 +265,84 @@ function QuestsPage() {
           ))}
         </div>
       )}
+
+      {/* Workout detail dialog */}
+      <Dialog open={!!openQuest} onOpenChange={(o) => !o && setOpenQuest(null)}>
+        <DialogContent className="max-w-2xl glass-panel frame-corner border-primary/40 bg-background/95 backdrop-blur-xl">
+          {openQuest && (() => {
+            const w = buildWorkout(openQuest);
+            return (
+              <>
+                <DialogHeader>
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-primary-glow">▸ Training Protocol</p>
+                  <DialogTitle className="text-2xl glow-text flex items-center gap-2">
+                    <Dumbbell className="w-5 h-5 text-primary-glow" />
+                    {openQuest.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-muted-foreground">{w.intro}</DialogDescription>
+                </DialogHeader>
+
+                <div className="grid grid-cols-3 gap-3 my-3">
+                  <div className="glass-panel p-3 text-center">
+                    <Target className="w-4 h-4 mx-auto text-primary-glow mb-1" />
+                    <p className="text-[10px] uppercase text-muted-foreground tracking-wider">Difficulty</p>
+                    <p className="text-sm font-bold uppercase">{openQuest.difficulty}</p>
+                  </div>
+                  <div className="glass-panel p-3 text-center">
+                    <Timer className="w-4 h-4 mx-auto text-primary-glow mb-1" />
+                    <p className="text-[10px] uppercase text-muted-foreground tracking-wider">Duration</p>
+                    <p className="text-sm font-bold">{w.duration}</p>
+                  </div>
+                  <div className="glass-panel p-3 text-center">
+                    <Flame className="w-4 h-4 mx-auto text-warning mb-1" />
+                    <p className="text-[10px] uppercase text-muted-foreground tracking-wider">Reward</p>
+                    <p className="text-sm font-bold text-warning">+{openQuest.xp_reward} XP</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 max-h-[45vh] overflow-y-auto pr-1">
+                  {w.exercises.map((ex, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-center gap-3 rounded-md border border-primary/30 bg-gradient-to-r ${MUSCLE_COLORS[ex.muscle] ?? "from-accent/20 to-transparent"} p-3`}
+                    >
+                      <BodyDiagram muscle={ex.muscle} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className="font-bold text-sm truncate">{ex.name}</h4>
+                          <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-primary/20 text-primary-glow shrink-0">{ex.muscle}</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mt-2 text-xs">
+                          <div><p className="text-muted-foreground uppercase text-[10px]">Sets</p><p className="font-semibold">{ex.sets}</p></div>
+                          <div><p className="text-muted-foreground uppercase text-[10px]">Reps</p><p className="font-semibold">{ex.reps}</p></div>
+                          <div><p className="text-muted-foreground uppercase text-[10px]">Rest</p><p className="font-semibold">{ex.rest}</p></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2 pt-3">
+                  <button
+                    onClick={() => setOpenQuest(null)}
+                    className="flex-1 py-2 rounded border border-border text-sm hover:bg-secondary/40 transition flex items-center justify-center gap-1"
+                  >
+                    <X className="w-4 h-4" /> Close
+                  </button>
+                  <button
+                    onClick={() => accept(openQuest.id)}
+                    disabled={accepted.has(openQuest.id)}
+                    className="flex-[2] btn-glow py-2 rounded font-semibold text-sm disabled:opacity-40"
+                  >
+                    <Sword className="inline w-4 h-4 mr-1" />
+                    {accepted.has(openQuest.id) ? "Already accepted" : "Accept Quest"}
+                  </button>
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
