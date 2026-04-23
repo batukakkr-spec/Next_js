@@ -4,7 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { Sword } from "lucide-react";
+import { Sword, Shield, Trophy, Zap } from "lucide-react";
 
 type RoleChoice = "admin" | "user";
 
