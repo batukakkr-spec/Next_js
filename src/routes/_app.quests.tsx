@@ -37,15 +37,15 @@ interface Workout {
 }
 
 const MUSCLE_COLORS: Record<string, string> = {
-  ABS: "from-blue-500/30 to-blue-700/10",
-  BICEPS: "from-blue-500/30 to-blue-700/10",
-  TRICEPS: "from-blue-500/30 to-blue-700/10",
-  BACK: "from-blue-500/30 to-blue-700/10",
-  CHEST: "from-blue-500/30 to-blue-700/10",
-  GLUTES: "from-blue-500/30 to-blue-700/10",
-  QUADS: "from-blue-500/30 to-blue-700/10",
-  CARDIO: "from-orange-500/30 to-red-700/10",
-  MIND: "from-purple-500/30 to-indigo-700/10",
+  ABS: "from-cyan-500/25 via-cyan-400/10 to-transparent",
+  BICEPS: "from-sky-500/25 via-sky-400/10 to-transparent",
+  TRICEPS: "from-indigo-500/25 via-indigo-400/10 to-transparent",
+  BACK: "from-violet-500/25 via-violet-400/10 to-transparent",
+  CHEST: "from-blue-500/30 via-blue-400/10 to-transparent",
+  GLUTES: "from-fuchsia-500/25 via-fuchsia-400/10 to-transparent",
+  QUADS: "from-emerald-500/25 via-emerald-400/10 to-transparent",
+  CARDIO: "from-orange-500/30 via-red-500/15 to-transparent",
+  MIND: "from-purple-500/30 via-indigo-500/15 to-transparent",
 };
 
 function buildWorkout(q: Quest): Workout {
