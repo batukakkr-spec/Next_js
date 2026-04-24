@@ -70,15 +70,26 @@ function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="container mx-auto px-6 pt-12 lg:pt-20 pb-24 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="animate-float-up">
+      <section className="relative min-h-[calc(100vh-6rem)] container mx-auto px-6 pt-8 lg:pt-12 pb-32 grid lg:grid-cols-2 gap-8 lg:gap-4 items-center">
+        {/* Subtle grid background */}
+        <div
+          className="absolute inset-0 -z-10 opacity-[0.07] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(oklch(0.7 0.2 230) 1px, transparent 1px), linear-gradient(90deg, oklch(0.7 0.2 230) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
+        <div className="animate-float-up relative z-10">
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1 hex-cut border border-primary/50 bg-primary/10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary-glow animate-pulse" />
             <p className="system-label text-[10px] text-primary-glow">▸ New • AI Trainer v2</p>
           </div>
-          <h1 className="text-5xl lg:text-7xl font-black glow-text leading-[0.95]">
-            Track your fitness.<br />
-            <span className="text-primary-glow">Transform</span> your body.
+          <h1 className="text-5xl lg:text-7xl xl:text-8xl font-black leading-[0.95] tracking-tight">
+            <span className="text-foreground">Track your<br />fitness.</span><br />
+            <span className="bg-gradient-to-r from-primary-glow via-primary to-accent bg-clip-text text-transparent drop-shadow-[0_0_30px_oklch(0.7_0.25_230/0.6)]">
+              Transform<br />your body.
+            </span>
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-lg leading-relaxed">
             XuchTrack is an AI-powered fitness companion that turns workouts,
@@ -110,30 +121,43 @@ function Landing() {
           </div>
         </div>
 
-        <div className="relative animate-float-up">
-          <div className="relative">
-            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-primary/40 via-primary-glow/30 to-accent/20 blur-3xl" />
-            <img
-              src={heroWarrior}
-              alt="XuchTrack neon warrior guardian"
-              className="relative w-full h-auto drop-shadow-[0_0_80px_oklch(0.7_0.25_230/0.6)]"
-              width={1024}
-              height={1024}
-            />
-            <div className="absolute -bottom-4 left-2 right-2 lg:left-4 lg:right-4 glass-panel frame-corner grid grid-cols-4 gap-1 p-4 backdrop-blur-md bg-background/70">
-              {[
-                { i: Dumbbell, n: "10M+", l: "Workouts Tracked" },
-                { i: Users, n: "500K+", l: "Active Users" },
-                { i: TrendingUp, n: "95%", l: "Success Rate" },
-                { i: Headphones, n: "24/7", l: "AI Coach Support" },
-              ].map((s) => (
-                <div key={s.l} className="text-center px-1">
-                  <s.i className="w-5 h-5 text-primary-glow mx-auto mb-2" strokeWidth={1.5} />
-                  <p className="text-lg lg:text-xl font-bold glow-text leading-none">{s.n}</p>
-                  <p className="text-[9px] text-muted-foreground mt-1.5 leading-tight">{s.l}</p>
+        <div className="relative animate-float-up flex items-center justify-center lg:justify-end">
+          {/* Massive radial aura */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[120%] h-[120%] rounded-full bg-[radial-gradient(circle,oklch(0.7_0.25_230/0.35)_0%,oklch(0.6_0.2_240/0.15)_40%,transparent_70%)] blur-2xl animate-pulse-glow" />
+          </div>
+          {/* Concentric tech rings */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[90%] aspect-square rounded-full border border-primary/20 animate-[spin_60s_linear_infinite]" />
+            <div className="absolute w-[70%] aspect-square rounded-full border border-primary-glow/30" />
+            <div className="absolute w-[55%] aspect-square rounded-full border border-primary/40" />
+          </div>
+          <img
+            src={heroWarrior}
+            alt="XuchTrack neon warrior guardian"
+            className="relative w-full max-w-[640px] h-auto drop-shadow-[0_0_120px_oklch(0.7_0.28_230/0.7)]"
+            width={1024}
+            height={1024}
+          />
+        </div>
+
+        {/* Bottom full-width stats bar */}
+        <div className="lg:col-span-2 relative z-10 mt-4 lg:mt-0 lg:absolute lg:bottom-6 lg:left-6 lg:right-6">
+          <div className="glass-panel frame-corner grid grid-cols-2 md:grid-cols-4 gap-3 p-5 lg:p-6 backdrop-blur-xl bg-background/60 border border-primary/30">
+            {[
+              { i: Dumbbell, n: "10M+", l: "Workouts Tracked" },
+              { i: Users, n: "500K+", l: "Active Users" },
+              { i: TrendingUp, n: "95%", l: "Success Rate" },
+              { i: Headphones, n: "24/7", l: "AI Coach Support" },
+            ].map((s, i) => (
+              <div key={s.l} className={`flex items-center gap-4 px-3 ${i > 0 ? "md:border-l md:border-primary/20" : ""}`}>
+                <s.i className="w-7 h-7 text-primary-glow shrink-0" strokeWidth={1.5} />
+                <div>
+                  <p className="text-2xl lg:text-3xl font-black glow-text leading-none">{s.n}</p>
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground mt-1.5">{s.l}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
