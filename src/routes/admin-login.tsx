@@ -4,6 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Shield, Eye, EyeOff } from "lucide-react";
+import { claimAdmin } from "@/server/admin";
 
 export const Route = createFileRoute("/admin-login")({
   component: AdminLoginPage,
@@ -19,6 +20,28 @@ function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [claiming, setClaiming] = useState(false);
+
+  const handleClaim = async () => {
+    const parsed = schema.safeParse({ email, password });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    setClaiming(true);
+    try {
+      await claimAdmin({ data: parsed.data });
+      toast.success("Admin account ready. Signing in...");
+      await supabase.auth.signOut().catch(() => {});
+      const { data: auth, error } = await supabase.auth.signInWithPassword(parsed.data);
+      if (error || !auth.user) throw new Error(error?.message ?? "Sign-in failed");
+      window.location.href = "/admin";
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to claim admin");
+    } finally {
+      setClaiming(false);
+    }
+  };
 
   const handleSubmit = async () => {
     const parsed = schema.safeParse({ email, password });
@@ -98,6 +121,17 @@ function AdminLoginPage() {
             >
               {loading ? "VERIFYING..." : "🛡 ENTER ADMIN ZONE"}
             </button>
+            <button
+              type="button"
+              onClick={() => void handleClaim()}
+              disabled={claiming}
+              className="w-full py-2 rounded-md font-medium tracking-wider bg-primary/10 border border-primary/40 text-primary-glow hover:bg-primary/20 transition disabled:opacity-50 text-sm"
+            >
+              {claiming ? "GRANTING..." : "⚡ Claim / Create Admin"}
+            </button>
+            <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+              "Claim" дарвал дээрх email-ээр admin бүртгэл үүсгэх эсвэл одоогийн бүртгэлд admin эрх олгоно.
+            </p>
           </form>
 
           <p className="mt-6 text-sm text-muted-foreground text-center">
