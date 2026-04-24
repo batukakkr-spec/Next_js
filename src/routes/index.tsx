@@ -3,7 +3,11 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import heroBg from "@/assets/hero-bg.jpg";
 import aiAssistant from "@/assets/ai-trainer.webp";
-import { Dumbbell, Trophy, Brain, Swords, HeartPulse, Flame } from "lucide-react";
+import {
+  Dumbbell, Trophy, Brain, Swords, HeartPulse, Flame,
+  Activity, BarChart3, Target, Zap, Shield, Sparkles,
+  ArrowRight, CheckCircle2, Github, Twitter, Instagram, Mail,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -18,21 +22,25 @@ function Landing() {
   }, [loading, isAuthenticated, navigate]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Hero background */}
-      <div className="absolute inset-0 -z-10">
+    <div className="min-h-screen relative overflow-hidden scroll-smooth">
+      {/* Animated background */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
         <img
           src={heroBg}
-          alt="Mystical dungeon"
-          className="w-full h-full object-cover opacity-40"
+          alt=""
+          aria-hidden="true"
+          className="w-full h-[80vh] object-cover opacity-25"
           width={1920}
           height={1280}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
-        <div className="absolute inset-0 scanline opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/85 to-background" />
+        <div className="absolute inset-0 scanline opacity-30" />
+        {/* Floating glow blobs */}
+        <div className="absolute top-[10%] -left-32 w-[28rem] h-[28rem] rounded-full bg-primary/25 blur-[120px] animate-pulse-glow" />
+        <div className="absolute top-[40%] -right-32 w-[32rem] h-[32rem] rounded-full bg-accent/25 blur-[140px] animate-pulse-glow" style={{ animationDelay: "1.2s" }} />
+        <div className="absolute bottom-[5%] left-1/3 w-[24rem] h-[24rem] rounded-full bg-primary-glow/20 blur-[120px] animate-pulse-glow" style={{ animationDelay: "2.4s" }} />
       </div>
 
-      <div className="absolute inset-0 -z-10 scanline opacity-30 pointer-events-none" />
       {/* Nav */}
       <header className="container mx-auto flex items-center justify-between p-6 relative z-10">
         <div className="flex items-center gap-2">
@@ -41,15 +49,18 @@ function Landing() {
           </div>
           <div className="leading-tight">
             <span className="font-bold tracking-[0.3em] glow-text">XuchTrack</span>
-            <p className="system-label text-[9px] text-primary-glow/80">▸ Hunter Fitness System</p>
+            <p className="system-label text-[9px] text-primary-glow/80">▸ Fitness Tracking System</p>
           </div>
         </div>
-        <nav className="flex gap-3">
-          <Link to="/login" className="px-4 py-2 text-xs uppercase tracking-widest hex-cut border border-primary/40 hover:bg-primary/10">
-            Re-enter
+        <nav className="flex items-center gap-3">
+          <a href="#features" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Features</a>
+          <a href="#preview" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Preview</a>
+          <a href="#benefits" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Benefits</a>
+          <Link to="/login" className="px-4 py-2 text-xs uppercase tracking-widest hex-cut border border-primary/40 hover:bg-primary/10 transition-colors">
+            Sign in
           </Link>
           <Link to="/register" className="px-4 py-2 text-xs uppercase tracking-widest hex-cut btn-glow font-medium">
-            ⚔ Awaken
+            Get Started
           </Link>
         </nav>
       </header>
