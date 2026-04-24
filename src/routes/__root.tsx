@@ -2,7 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 
-import appCss from "../styles.css?url";
+import "@/styles.css";
 
 function NotFoundComponent() {
   return (
@@ -35,7 +35,6 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "/app-logo.png" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/png", href: "/app-logo.png" },
       { rel: "apple-touch-icon", href: "/app-logo.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

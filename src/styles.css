@@ -3,7 +3,7 @@
 @import "tw-animate-css";
 
 /* Solo Leveling System fonts */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,7 +45,7 @@
 :root {
   --radius: 0.5rem;
 
-  --background: oklch(0.10 0.03 255);
+  --background: oklch(0.1 0.03 255);
   --foreground: oklch(0.97 0.02 220);
 
   --panel: oklch(0.14 0.04 255);
@@ -67,34 +67,39 @@
   --muted: oklch(0.18 0.04 258);
   --muted-foreground: oklch(0.72 0.05 230);
 
-  --accent: oklch(0.60 0.22 240);
+  --accent: oklch(0.6 0.22 240);
   --accent-foreground: oklch(0.98 0.02 220);
 
   --destructive: oklch(0.62 0.24 25);
   --destructive-foreground: oklch(0.98 0.02 240);
 
-  --success: oklch(0.78 0.20 165);
+  --success: oklch(0.78 0.2 165);
   --success-foreground: oklch(0.08 0.03 255);
 
   --warning: oklch(0.85 0.18 85);
   --warning-foreground: oklch(0.08 0.03 255);
 
-  --border: oklch(0.78 0.18 220 / 0.40);
+  --border: oklch(0.78 0.18 220 / 0.4);
   --input: oklch(0.18 0.05 255);
   --ring: oklch(0.85 0.22 215);
 
   /* Gradients & shadows */
   --gradient-primary: linear-gradient(135deg, oklch(0.55 0.22 240), oklch(0.85 0.22 215));
-  --gradient-panel: linear-gradient(180deg, oklch(0.16 0.05 255 / 0.92), oklch(0.10 0.04 255 / 0.96));
+  --gradient-panel: linear-gradient(
+    180deg,
+    oklch(0.16 0.05 255 / 0.92),
+    oklch(0.1 0.04 255 / 0.96)
+  );
   --gradient-glow: radial-gradient(circle at 50% 0%, oklch(0.85 0.22 215 / 0.45), transparent 70%);
 
   --shadow-glow: 0 0 24px oklch(0.85 0.22 215 / 0.55), 0 0 60px oklch(0.55 0.22 240 / 0.25);
-  --shadow-panel: 0 10px 40px -10px oklch(0.05 0.03 255 / 0.9), inset 0 1px 0 oklch(0.85 0.22 215 / 0.25);
+  --shadow-panel:
+    0 10px 40px -10px oklch(0.05 0.03 255 / 0.9), inset 0 1px 0 oklch(0.85 0.22 215 / 0.25);
   --shadow-frame: 0 0 0 1px oklch(0.85 0.22 215 / 0.55), 0 0 24px oklch(0.85 0.22 215 / 0.35);
 }
 
 .dark {
-  --background: oklch(0.10 0.03 255);
+  --background: oklch(0.1 0.03 255);
   --foreground: oklch(0.96 0.02 240);
 }
 
@@ -103,10 +108,11 @@
     border-color: var(--color-border);
   }
 
-  html, body {
+  html,
+  body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: 'Rajdhani', 'Inter', system-ui, sans-serif;
+    font-family: "Rajdhani", "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -115,19 +121,29 @@
       linear-gradient(oklch(0.85 0.22 215 / 0.04) 1px, transparent 1px),
       linear-gradient(90deg, oklch(0.85 0.22 215 / 0.04) 1px, transparent 1px),
       radial-gradient(ellipse at 20% -10%, oklch(0.55 0.22 240 / 0.35), transparent 60%),
-      radial-gradient(ellipse at 80% 110%, oklch(0.60 0.22 240 / 0.25), transparent 60%);
-    background-size: 48px 48px, 48px 48px, auto, auto;
+      radial-gradient(ellipse at 80% 110%, oklch(0.6 0.22 240 / 0.25), transparent 60%);
+    background-size:
+      48px 48px,
+      48px 48px,
+      auto,
+      auto;
     background-attachment: fixed;
     min-height: 100vh;
   }
 
-  h1, h2, h3, h4 {
-    font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Orbitron", "Rajdhani", sans-serif;
     letter-spacing: 0.04em;
   }
 
-  code, pre, .font-mono, .system-mono {
-    font-family: 'Share Tech Mono', ui-monospace, monospace;
+  code,
+  pre,
+  .font-mono,
+  .system-mono {
+    font-family: "Share Tech Mono", ui-monospace, monospace;
   }
 }
 
@@ -155,10 +171,17 @@
     position: absolute;
     inset: 0;
     padding: 1px;
-    background: linear-gradient(135deg, oklch(0.85 0.22 215 / 0.9), transparent 50%, oklch(0.55 0.22 240 / 0.6));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    background: linear-gradient(
+      135deg,
+      oklch(0.85 0.22 215 / 0.9),
+      transparent 50%,
+      oklch(0.55 0.22 240 / 0.6)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
-            mask-composite: exclude;
+    mask-composite: exclude;
     pointer-events: none;
     clip-path: inherit;
   }
@@ -172,14 +195,22 @@
     inset: 4px;
     pointer-events: none;
     background:
-      linear-gradient(to right, oklch(0.92 0.22 215) 0 18px, transparent 18px) top left / 18px 2px no-repeat,
-      linear-gradient(to bottom, oklch(0.92 0.22 215) 0 18px, transparent 18px) top left / 2px 18px no-repeat,
-      linear-gradient(to left, oklch(0.92 0.22 215) 0 18px, transparent 18px) top right / 18px 2px no-repeat,
-      linear-gradient(to bottom, oklch(0.92 0.22 215) 0 18px, transparent 18px) top right / 2px 18px no-repeat,
-      linear-gradient(to right, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom left / 18px 2px no-repeat,
-      linear-gradient(to top, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom left / 2px 18px no-repeat,
-      linear-gradient(to left, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom right / 18px 2px no-repeat,
-      linear-gradient(to top, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom right / 2px 18px no-repeat;
+      linear-gradient(to right, oklch(0.92 0.22 215) 0 18px, transparent 18px) top left / 18px 2px
+        no-repeat,
+      linear-gradient(to bottom, oklch(0.92 0.22 215) 0 18px, transparent 18px) top left / 2px 18px
+        no-repeat,
+      linear-gradient(to left, oklch(0.92 0.22 215) 0 18px, transparent 18px) top right / 18px 2px
+        no-repeat,
+      linear-gradient(to bottom, oklch(0.92 0.22 215) 0 18px, transparent 18px) top right / 2px 18px
+        no-repeat,
+      linear-gradient(to right, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom left / 18px
+        2px no-repeat,
+      linear-gradient(to top, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom left / 2px 18px
+        no-repeat,
+      linear-gradient(to left, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom right / 18px
+        2px no-repeat,
+      linear-gradient(to top, oklch(0.92 0.22 215) 0 18px, transparent 18px) bottom right / 2px 18px
+        no-repeat;
     filter: drop-shadow(0 0 6px oklch(0.85 0.22 215 / 0.8));
   }
 
@@ -194,12 +225,17 @@
     background: var(--gradient-primary);
     color: var(--primary-foreground);
     box-shadow: var(--shadow-glow);
-    transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease,
+      filter 200ms ease;
   }
   .btn-glow:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
-    box-shadow: 0 0 40px oklch(0.78 0.22 230 / 0.55), 0 0 80px oklch(0.55 0.22 260 / 0.25);
+    box-shadow:
+      0 0 40px oklch(0.78 0.22 230 / 0.55),
+      0 0 80px oklch(0.55 0.22 260 / 0.25);
   }
 
   .xp-bar {
@@ -240,7 +276,7 @@
   }
 
   .system-label {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: "Share Tech Mono", monospace;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: oklch(0.92 0.22 215);
@@ -261,21 +297,45 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px oklch(0.85 0.22 215 / 0.4); }
-  50% { box-shadow: 0 0 50px oklch(0.92 0.22 215 / 0.9); }
+  0%,
+  100% {
+    box-shadow: 0 0 20px oklch(0.85 0.22 215 / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 50px oklch(0.92 0.22 215 / 0.9);
+  }
 }
-.animate-pulse-glow { animation: pulse-glow 2.4s ease-in-out infinite; }
+.animate-pulse-glow {
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
 
 @keyframes float-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.animate-float-up { animation: float-up 400ms ease-out both; }
+.animate-float-up {
+  animation: float-up 400ms ease-out both;
+}
 
 @keyframes system-scan {
-  0% { transform: translateY(-100%); opacity: 0; }
-  10%, 90% { opacity: 1; }
-  100% { transform: translateY(100%); opacity: 0; }
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 .animate-system-scan {
   position: relative;
@@ -285,23 +345,61 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    oklch(0.92 0.22 215 / 0.18) 50%,
-    transparent
-  );
+  background: linear-gradient(180deg, transparent, oklch(0.92 0.22 215 / 0.18) 50%, transparent);
   animation: system-scan 3.6s linear infinite;
   pointer-events: none;
 }
 
 @keyframes flicker {
-  0%, 100% { opacity: 1; }
-  47% { opacity: 1; }
-  48% { opacity: 0.55; }
-  49% { opacity: 1; }
-  62% { opacity: 1; }
-  63% { opacity: 0.7; }
-  64% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  47% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.55;
+  }
+  49% {
+    opacity: 1;
+  }
+  62% {
+    opacity: 1;
+  }
+  63% {
+    opacity: 0.7;
+  }
+  64% {
+    opacity: 1;
+  }
 }
-.animate-flicker { animation: flicker 4s infinite; }
+.animate-flicker {
+  animation: flicker 4s infinite;
+}
+
+@layer utilities {
+  .animate-pulse-glow {
+    animation: pulse-glow 2.4s ease-in-out infinite;
+  }
+  .animate-float-up {
+    animation: float-up 400ms ease-out both;
+  }
+  .animate-flicker {
+    animation: flicker 4s infinite;
+  }
+
+  .animate-system-scan {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .animate-system-scan::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, oklch(0.92 0.22 215 / 0.18) 50%, transparent);
+    animation: system-scan 3.6s linear infinite;
+    pointer-events: none;
+  }
+}
