@@ -3,10 +3,12 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import heroBg from "@/assets/hero-bg.jpg";
 import aiAssistant from "@/assets/ai-trainer.webp";
+import heroWarrior from "@/assets/hero-warrior.png";
 import {
   Dumbbell, Trophy, Brain, Swords, HeartPulse, Flame,
   Activity, BarChart3, Target, Zap, Shield, Sparkles,
   ArrowRight, CheckCircle2, Github, Twitter, Instagram, Mail,
+  Users, TrendingUp, Headphones,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -56,9 +58,6 @@ function Landing() {
           <a href="#features" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Features</a>
           <a href="#preview" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Preview</a>
           <a href="#benefits" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Benefits</a>
-          <Link to="/login" className="px-4 py-2 text-xs uppercase tracking-widest hex-cut border border-primary/40 hover:bg-primary/10 transition-colors">
-            Sign in
-          </Link>
           <Link to="/register" className="px-4 py-2 text-xs uppercase tracking-widest hex-cut btn-glow font-medium">
             Get Started
           </Link>
