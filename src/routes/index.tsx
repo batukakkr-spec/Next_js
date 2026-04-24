@@ -45,20 +45,25 @@ function Landing() {
 
       {/* Nav */}
       <header className="container mx-auto flex items-center justify-between p-6 relative z-10">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 hex-cut btn-glow flex items-center justify-center">
-            <Dumbbell className="w-4 h-4" />
+        <div className="flex items-center gap-3">
+          <div className="relative w-12 h-12 flex items-center justify-center">
+            <div className="absolute inset-0 bg-primary/20 blur-xl" />
+            <span className="relative text-3xl font-black glow-text font-[Cinzel] tracking-tighter text-primary-glow">X</span>
           </div>
           <div className="leading-tight">
-            <span className="font-bold tracking-[0.3em] glow-text">XuchTrack</span>
-            <p className="system-label text-[9px] text-primary-glow/80">▸ Fitness Tracking System</p>
+            <span className="block text-2xl font-black tracking-wide text-foreground">XuchTrack</span>
+            <p className="system-label text-[10px] tracking-[0.35em] text-primary-glow/80">FITNESS TRACKING SYSTEM</p>
           </div>
         </div>
-        <nav className="flex items-center gap-3">
-          <a href="#features" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Features</a>
-          <a href="#preview" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Preview</a>
-          <a href="#benefits" className="hidden md:inline text-xs uppercase tracking-widest text-muted-foreground hover:text-primary-glow transition-colors">Benefits</a>
-          <Link to="/register" className="px-4 py-2 text-xs uppercase tracking-widest hex-cut btn-glow font-medium">
+        <nav className="flex items-center gap-6 lg:gap-8">
+          <a href="#features" className="hidden md:inline text-xs uppercase tracking-[0.3em] text-muted-foreground hover:text-primary-glow transition-colors">Features</a>
+          <a href="#preview" className="hidden md:inline text-xs uppercase tracking-[0.3em] text-muted-foreground hover:text-primary-glow transition-colors">Preview</a>
+          <a href="#benefits" className="hidden md:inline text-xs uppercase tracking-[0.3em] text-muted-foreground hover:text-primary-glow transition-colors">Benefits</a>
+          <Link to="/login" className="hidden md:inline text-xs uppercase tracking-[0.3em] text-foreground border-b-2 border-primary-glow pb-1 hover:text-primary-glow transition-colors">
+            Sign In
+          </Link>
+          <span className="hidden md:inline h-6 w-px bg-primary/30" />
+          <Link to="/register" className="px-5 py-2.5 text-xs uppercase tracking-[0.3em] hex-cut btn-glow font-semibold">
             Get Started
           </Link>
         </nav>
@@ -106,16 +111,16 @@ function Landing() {
         </div>
 
         <div className="relative animate-float-up">
-          <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-3xl" />
           <div className="relative">
+            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-primary/40 via-primary-glow/30 to-accent/20 blur-3xl" />
             <img
               src={heroWarrior}
               alt="XuchTrack neon warrior guardian"
-              className="relative w-full h-auto drop-shadow-[0_0_60px_oklch(0.7_0.2_230/0.5)]"
+              className="relative w-full h-auto drop-shadow-[0_0_80px_oklch(0.7_0.25_230/0.6)]"
               width={1024}
               height={1024}
             />
-            <div className="mt-4 glass-panel frame-corner grid grid-cols-4 gap-2 p-4">
+            <div className="absolute -bottom-4 left-2 right-2 lg:left-4 lg:right-4 glass-panel frame-corner grid grid-cols-4 gap-1 p-4 backdrop-blur-md bg-background/70">
               {[
                 { i: Dumbbell, n: "10M+", l: "Workouts Tracked" },
                 { i: Users, n: "500K+", l: "Active Users" },
@@ -123,9 +128,9 @@ function Landing() {
                 { i: Headphones, n: "24/7", l: "AI Coach Support" },
               ].map((s) => (
                 <div key={s.l} className="text-center px-1">
-                  <s.i className="w-5 h-5 text-primary-glow mx-auto mb-2" />
-                  <p className="text-xl lg:text-2xl font-bold glow-text leading-none">{s.n}</p>
-                  <p className="system-label text-[9px] text-muted-foreground mt-1.5 leading-tight">{s.l}</p>
+                  <s.i className="w-5 h-5 text-primary-glow mx-auto mb-2" strokeWidth={1.5} />
+                  <p className="text-lg lg:text-xl font-bold glow-text leading-none">{s.n}</p>
+                  <p className="text-[9px] text-muted-foreground mt-1.5 leading-tight">{s.l}</p>
                 </div>
               ))}
             </div>
