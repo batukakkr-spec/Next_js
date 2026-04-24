@@ -23,36 +23,69 @@ const schema = z.object({
   password: z.string().min(8, "Min 8 characters").max(72),
 });
 
+function getRegisterErrorMessage(message?: string) {
+  const normalized = message?.toLowerCase() ?? "";
+
+  if (!message) return "Registration failed. Please try again.";
+  if (normalized.includes("user already registered")) {
+    return "Энэ email-ээр бүртгэлтэй account байна. Login хэсгээр нэвтэрнэ үү.";
+  }
+  if (normalized.includes("password should be at least")) {
+    return "Нууц үг шаардлага хангахгүй байна. Илүү хүчтэй password оруулна уу.";
+  }
+
+  return message;
+}
+
 function RegisterPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorText, setErrorText] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse({ username, email, password });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
+      const message = parsed.error.issues[0].message;
+      setErrorText(message);
+      toast.error(message);
       return;
     }
+
+    setErrorText(null);
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email: parsed.data.email,
-      password: parsed.data.password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { username: parsed.data.username, display_name: parsed.data.username },
-      },
-    });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: parsed.data.email.toLowerCase(),
+        password: parsed.data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: { username: parsed.data.username, display_name: parsed.data.username },
+        },
+      });
+
+      if (error) {
+        const message = getRegisterErrorMessage(error.message);
+        setErrorText(message);
+        toast.error(message);
+        return;
+      }
+
+      if (data.session) {
+        toast.success("⚡ You have awakened, Hunter.");
+        navigate({ to: "/dashboard" });
+        return;
+      }
+
+      toast.success("Бүртгэл амжилттай. Email-ээ шалгаад баталгаажуулсны дараа нэвтэрнэ үү.");
+      navigate({ to: "/login" });
+    } finally {
+      setLoading(false);
     }
-    toast.success("⚡ You have awakened, Hunter.");
-    navigate({ to: "/dashboard" });
   };
 
   return (
@@ -71,8 +104,12 @@ function RegisterPage() {
               <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Hunter name</label>
               <input
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  if (errorText) setErrorText(null);
+                }}
                 required
+                autoComplete="username"
                 className="w-full bg-input/60 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
@@ -81,8 +118,14 @@ function RegisterPage() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errorText) setErrorText(null);
+                }}
                 required
+                autoComplete="email"
+                inputMode="email"
+                aria-invalid={!!errorText}
                 className="w-full bg-input/60 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
@@ -91,11 +134,21 @@ function RegisterPage() {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errorText) setErrorText(null);
+                }}
                 required
+                autoComplete="new-password"
+                aria-invalid={!!errorText}
                 className="w-full bg-input/60 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
+            {errorText ? (
+              <p className="text-sm text-destructive" role="alert">
+                {errorText}
+              </p>
+            ) : null}
             <button
               type="submit"
               disabled={loading}

@@ -1,10 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { Sword, Shield, Trophy, Zap } from "lucide-react";
+import { Eye, EyeOff, Sword, Shield, Trophy, Zap } from "lucide-react";
 
 async function googleSignIn() {
   const result = await lovable.auth.signInWithOAuth("google", {
@@ -22,29 +22,62 @@ const schema = z.object({
   password: z.string().min(6, "Min 6 characters").max(72),
 });
 
+function getLoginErrorMessage(message?: string) {
+  const normalized = message?.toLowerCase() ?? "";
+
+  if (!message) return "Login failed. Please try again.";
+  if (normalized.includes("invalid login credentials")) {
+    return "Email эсвэл нууц үг буруу байна. Хэрэв шинэ хэрэглэгч бол эхлээд бүртгүүлнэ үү.";
+  }
+  if (normalized.includes("email not confirmed")) {
+    return "Email хаяг баталгаажаагүй байна. Баталгаажуулсны дараа дахин нэвтэрнэ үү.";
+  }
+  if (normalized.includes("too many requests")) {
+    return "Хэт олон оролдлого хийсэн байна. Түр хүлээгээд дахин оролдоно уу.";
+  }
+
+  return message;
+}
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorText, setErrorText] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
+
     const parsed = schema.safeParse({ email, password });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
+      const message = parsed.error.issues[0].message;
+      setErrorText(message);
+      toast.error(message);
       return;
     }
+
+    setErrorText(null);
     setLoading(true);
-    await supabase.auth.signOut().catch(() => {});
-    const { data: auth, error } = await supabase.auth.signInWithPassword(parsed.data);
-    if (error || !auth.user) {
+
+    try {
+      const credentials = {
+        email: parsed.data.email.toLowerCase(),
+        password: parsed.data.password,
+      };
+      const { data: auth, error } = await supabase.auth.signInWithPassword(credentials);
+      if (error || !auth.user) {
+        const message = getLoginErrorMessage(error?.message);
+        setErrorText(message);
+        toast.error(message);
+        return;
+      }
+
+      toast.success("Welcome back, Hunter.");
+      window.location.href = "/dashboard";
+    } finally {
       setLoading(false);
-      toast.error(error?.message ?? "Login failed");
-      return;
     }
-    setLoading(false);
-    toast.success("Welcome back, Hunter.");
-    window.location.href = "/dashboard";
   };
 
   return (
@@ -104,30 +137,55 @@ function LoginPage() {
           <p className="text-xs uppercase tracking-[0.4em] text-primary-glow mb-2">▸ System Login</p>
           <h1 className="text-2xl font-bold glow-text mb-6">RE-ENTER THE GATE</h1>
 
-          <form onSubmit={(e) => e.preventDefault()} noValidate className="space-y-4">
+          <form onSubmit={(e) => void handleSubmit(e)} noValidate className="space-y-4">
             <div>
               <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Email</label>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errorText) setErrorText(null);
+                }}
                 required
+                autoComplete="email"
+                inputMode="email"
+                aria-invalid={!!errorText}
                 className="w-full bg-input/60 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div>
               <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-input/60 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorText) setErrorText(null);
+                  }}
+                  required
+                  autoComplete="current-password"
+                  aria-invalid={!!errorText}
+                  className="w-full bg-input/60 border border-border rounded-md px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary-glow transition"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
+            {errorText ? (
+              <p className="text-sm text-destructive" role="alert">
+                {errorText}
+              </p>
+            ) : null}
             <button
-              type="button"
-              onClick={() => void handleSubmit()}
+              type="submit"
               disabled={loading}
               className="w-full btn-glow py-3 rounded-md font-semibold tracking-wider disabled:opacity-50"
             >
