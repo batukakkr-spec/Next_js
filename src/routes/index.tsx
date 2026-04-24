@@ -76,49 +76,58 @@ function Landing() {
             <span className="text-primary-glow">Transform</span> your body.
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-lg leading-relaxed">
-            XuchTrack is an AI-powered fitness companion that turns workouts, nutrition, and
-            daily habits into measurable progress — all in one beautifully simple dashboard.
+            XuchTrack is an AI-powered fitness companion that turns workouts,
+            nutrition, and progress tracking into powerful results.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/register" className="btn-glow px-6 py-3 rounded-md font-semibold tracking-wider inline-flex items-center gap-2">
               Get Started <ArrowRight className="w-4 h-4" />
             </Link>
-            <a href="#features" className="px-6 py-3 rounded-md border border-primary/40 hover:bg-secondary/40 transition-colors">
-              See how it works
+            <a href="#features" className="px-6 py-3 rounded-md border border-primary/40 hover:bg-secondary/40 transition-colors inline-flex items-center gap-2">
+              Learn More <ArrowRight className="w-4 h-4" />
             </a>
           </div>
 
-          <div className="mt-10 grid grid-cols-3 gap-4 max-w-lg">
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 max-w-lg">
             {[
-              { n: "120K+", l: "Active Users" },
-              { n: "4.9★", l: "App Rating" },
-              { n: "AI", l: "Smart Coach" },
-            ].map((s) => (
-              <div key={s.l} className="glass-panel frame-corner p-3 text-center">
-                <p className="text-2xl font-bold glow-text">{s.n}</p>
-                <p className="system-label text-[9px] text-muted-foreground">{s.l}</p>
+              { i: Brain, l: "AI Coaching" },
+              { i: BarChart3, l: "Smart Tracking" },
+              { i: Target, l: "Personalized Plan" },
+              { i: Trophy, l: "Real Results" },
+            ].map((c) => (
+              <div key={c.l} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-7 h-7 hex-cut border border-primary/40 bg-primary/10 flex items-center justify-center">
+                  <c.i className="w-3.5 h-3.5 text-primary-glow" />
+                </div>
+                <span>{c.l}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div className="relative animate-float-up">
-          <div className="absolute -inset-8 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-3xl" />
-          <div className="relative glass-panel frame-corner overflow-hidden animate-system-scan">
+          <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-3xl" />
+          <div className="relative">
             <img
-              src={aiAssistant}
-              alt="XuchTrack AI Coach preview"
-              className="w-full h-auto"
-              width={768}
+              src={heroWarrior}
+              alt="XuchTrack neon warrior guardian"
+              className="relative w-full h-auto drop-shadow-[0_0_60px_oklch(0.7_0.2_230/0.5)]"
+              width={1024}
               height={1024}
             />
-            <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-background via-background/70 to-transparent">
-              <p className="system-label text-[10px] text-primary-glow">▸ AI Coach Online</p>
-              <p className="text-2xl font-bold glow-text">XUCH.AI</p>
-              <p className="text-sm text-muted-foreground">Your personal fitness strategist.</p>
-            </div>
-            <div className="absolute top-3 left-3 system-label text-[9px] text-primary-glow animate-flicker">
-              [ LIVE • SYNCED ]
+            <div className="mt-4 glass-panel frame-corner grid grid-cols-4 gap-2 p-4">
+              {[
+                { i: Dumbbell, n: "10M+", l: "Workouts Tracked" },
+                { i: Users, n: "500K+", l: "Active Users" },
+                { i: TrendingUp, n: "95%", l: "Success Rate" },
+                { i: Headphones, n: "24/7", l: "AI Coach Support" },
+              ].map((s) => (
+                <div key={s.l} className="text-center px-1">
+                  <s.i className="w-5 h-5 text-primary-glow mx-auto mb-2" />
+                  <p className="text-xl lg:text-2xl font-bold glow-text leading-none">{s.n}</p>
+                  <p className="system-label text-[9px] text-muted-foreground mt-1.5 leading-tight">{s.l}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
