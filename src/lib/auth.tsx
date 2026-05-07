@@ -1,4 +1,15 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+"use client";
+
+import {
+  useCallback,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -36,31 +47,72 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const initializedRef = useRef(false);
+  const loadingProfileRef = useRef<Promise<void> | null>(null);
+  const lastLoadedUserIdRef = useRef<string | null>(null);
 
-  const loadProfileAndRoles = async (uid: string) => {
-    const [{ data: p }, { data: r }] = await Promise.all([
-      supabase.from("profiles").select("*").eq("user_id", uid).maybeSingle(),
-      supabase.from("user_roles").select("role").eq("user_id", uid),
-    ]);
-    setProfile((p as Profile) ?? null);
-    setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
-  };
+  const loadProfileAndRoles = useCallback(async (uid: string) => {
+    if (loadingProfileRef.current) {
+      await loadingProfileRef.current;
+      return;
+    }
+
+    loadingProfileRef.current = (async () => {
+      const [{ data: p, error: profileError }, { data: r, error: rolesError }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("user_id", uid).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", uid),
+      ]);
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      if (rolesError) {
+        throw rolesError;
+      }
+
+      setProfile((p as Profile) ?? null);
+      setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+      lastLoadedUserIdRef.current = uid;
+    })();
+
+    try {
+      await loadingProfileRef.current;
+    } finally {
+      loadingProfileRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
-    // 1. Subscribe FIRST
-    const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((evt, sess) => {
+      if (!initializedRef.current) return;
+
       setSession(sess);
       setUser(sess?.user ?? null);
-      if (sess?.user) {
-        // defer to avoid deadlock
-        setTimeout(() => loadProfileAndRoles(sess.user.id), 0);
-      } else {
+
+      if (!sess?.user) {
+        lastLoadedUserIdRef.current = null;
         setProfile(null);
         setRoles([]);
+        setLoading(false);
+        return;
       }
+
+      const shouldReloadProfile =
+        evt === "SIGNED_IN" ||
+        evt === "USER_UPDATED" ||
+        lastLoadedUserIdRef.current !== sess.user.id;
+
+      if (!shouldReloadProfile) {
+        return;
+      }
+
+      setLoading(true);
+      void loadProfileAndRoles(sess.user.id).finally(() => setLoading(false));
     });
-    // 2. Then check current session
+
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
+      initializedRef.current = true;
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
@@ -70,25 +122,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [loadProfileAndRoles]);
 
-  const value: AuthContextValue = {
-    session,
-    user,
-    profile,
-    roles,
-    loading,
-    isAuthenticated: !!session,
-    hasRole: (r) => roles.includes(r),
-    refreshProfile: async () => {
-      if (user) await loadProfileAndRoles(user.id);
-    },
-    signOut: async () => {
-      await supabase.auth.signOut();
-    },
-  };
+  const memoizedValue = useMemo(
+    () => ({
+      session,
+      user,
+      profile,
+      roles,
+      loading,
+      isAuthenticated: !!session,
+      hasRole: (r: AppRole) => roles.includes(r),
+      refreshProfile: async () => {
+        if (!user) return;
+        lastLoadedUserIdRef.current = null;
+        await loadProfileAndRoles(user.id);
+      },
+      signOut: async () => {
+        setLoading(true);
+        try {
+          await supabase.auth.signOut();
+        } catch (error) {
+          setLoading(false);
+          throw error;
+        }
+      },
+    }),
+    [loading, profile, roles, session, user],
+  );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

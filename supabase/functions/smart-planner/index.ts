@@ -1,5 +1,6 @@
-// AI Smart Planner — agent with tool calling
-// Uses Lovable AI Gateway (LOVABLE_API_KEY auto-injected)
+// Deprecated: the production AI coach now runs through
+// app/api/ai -> src/routes/aiRoutes.ts -> src/controllers/aiController.ts -> src/services/aiCoach.ts.
+// This edge function is kept only as legacy reference.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -8,15 +9,39 @@ const corsHeaders = {
 };
 
 const SYSTEM_PROMPT = `You are Jin, the AI System companion for the LEVELING gamified self-improvement app.
-You are an action-oriented agent (not a chatbot). You analyze the Hunter's level, XP, streak, and recent quests
-to recommend a balanced daily plan.
+You are an action-oriented planner, not a casual chatbot. Your job is to study the Hunter's level, XP, streak,
+and available quest catalog, then produce a concrete, useful plan that feels realistic for one day or one week.
 
-Rules:
-- Always call tools instead of guessing. Use list_quests to see what is available, then suggest_quests with quest IDs.
-- Pick 2–4 quests appropriate to the user's level: easy for Lv1-3, medium 4-7, hard/epic 8+.
-- Mix categories (fitness + mind + work) when possible.
-- If the user asks you to "assign", "add", or "start" quests for them, also call assign_quests.
-- Keep replies short (2–4 sentences) and motivational, in the tone of a mystical RPG system.`;
+Core behavior:
+- Always use tools before making recommendations. Never invent quests.
+- Call list_quests first, then call suggest_quests with real quest IDs.
+- If the user clearly asks to add, assign, start, or accept a plan, also call assign_quests.
+- Recommend only 2 to 4 quests at a time unless the user explicitly asks for more.
+
+Selection rules:
+- Level 1-3: prioritize easy, momentum-building quests.
+- Level 4-7: prefer medium difficulty with one stretch task.
+- Level 8+: choose a sharper mix with harder challenges when available.
+- Avoid picking multiple quests that feel repetitive unless the user explicitly wants intense specialization.
+- Prefer a balanced mix across fitness, mind, study, work, social, or creative when possible.
+- If the user's message suggests fatigue, overload, burnout, poor focus, or low motivation, choose a lighter recovery-friendly plan.
+- If the user's message suggests ambition, grind, discipline, or performance, choose a more demanding plan.
+
+Reply style:
+- Keep the answer concise, practical, and motivating.
+- Do not ramble.
+- Sound like a sharp RPG system guide, but still natural and supportive.
+- Explain the logic briefly.
+
+Response format:
+- Start with a one-line summary of today's or this week's direction.
+- Then list the recommended quests as a short numbered plan.
+- End with one short motivating line.
+
+Language rules:
+- Reply in the language requested by the system message.
+- When replying in Mongolian, write naturally in Mongolian Cyrillic.
+- Quest titles may remain in English if that is how they exist in the catalog.`;
 
 const tools = [
   {
@@ -63,14 +88,72 @@ const tools = [
   },
 ];
 
+type ChatMessage = {
+  role: string;
+  content?: string | null;
+  tool_call_id?: string;
+  tool_calls?: Array<{
+    id: string;
+    type?: string;
+    function?: {
+      name?: string;
+      arguments?: string;
+    };
+  }>;
+};
+
+async function createAICompletion({
+  messages,
+}: {
+  messages: ChatMessage[];
+}) {
+  const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+  const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+
+  if (OPENAI_API_KEY) {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: OPENAI_MODEL,
+        messages,
+        tools,
+      }),
+    });
+
+    return { response, provider: "openai" as const };
+  }
+
+  if (LOVABLE_API_KEY) {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages,
+        tools,
+      }),
+    });
+
+    return { response, provider: "lovable" as const };
+  }
+
+  throw new Error("No AI provider configured. Set OPENAI_API_KEY or LOVABLE_API_KEY.");
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_PUBLISHABLE_KEY = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!;
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     const userToken = req.headers.get("x-user-token") ?? req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "") ?? "";
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
@@ -85,6 +168,10 @@ Deno.serve(async (req: Request) => {
     }
 
     const { messages = [], language = "en" } = await req.json();
+    const latestUserMessage = [...messages]
+      .reverse()
+      .find((message: { role?: string; content?: string }) => message?.role === "user")
+      ?.content ?? "";
 
     // Inject user context
     const { data: profile } = await supabase
@@ -93,6 +180,13 @@ Deno.serve(async (req: Request) => {
 
     const contextMsg = `Current Hunter context: name=${profile?.display_name ?? "Hunter"}, level=${profile?.level ?? 1}, xp=${profile?.xp ?? 0}/${profile?.xp_to_next ?? 100}, streak=${profile?.streak_days ?? 0} days.`;
 
+    const coachingModeMsg = `Interpret the user's latest request carefully: "${latestUserMessage}".
+If they ask for today's plan, optimize for immediate execution.
+If they ask for this week, optimize for sustainable variety.
+If they ask what to train, prioritize fitness-oriented quests when available.
+If they ask about focus, studying, discipline, or productivity, prioritize mind/study/work quests when available.
+If the request is vague, choose a balanced plan with one easy win first.`;
+
     const langMsg = language === "mn"
       ? "IMPORTANT: Reply ONLY in Mongolian (Cyrillic). Бүх хариултаа Монгол хэлээр, Кирилл үсгээр бич. Quest нэрийг англиар үлдээж болно."
       : "IMPORTANT: Reply ONLY in English.";
@@ -100,6 +194,7 @@ Deno.serve(async (req: Request) => {
     const conversation = [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "system", content: contextMsg },
+      { role: "system", content: coachingModeMsg },
       { role: "system", content: langMsg },
       ...messages,
     ];
@@ -109,18 +204,7 @@ Deno.serve(async (req: Request) => {
 
     // Agentic loop (max 4 iterations)
     for (let iter = 0; iter < 4; iter++) {
-      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: conversation,
-          tools,
-        }),
-      });
+      const { response: aiResp } = await createAICompletion({ messages: conversation });
 
       if (!aiResp.ok) {
         const t = await aiResp.text();
@@ -134,8 +218,8 @@ Deno.serve(async (req: Request) => {
             status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        console.error("AI gateway error:", aiResp.status, t);
-        throw new Error(`AI gateway error: ${aiResp.status}`);
+        console.error("AI provider error:", aiResp.status, t);
+        throw new Error(`AI provider error: ${aiResp.status}`);
       }
 
       const ai = await aiResp.json();

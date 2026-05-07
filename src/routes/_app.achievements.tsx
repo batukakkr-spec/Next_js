@@ -1,5 +1,8 @@
+"use client";
+
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Sparkles, Flame, Crown, Trophy, Medal } from "lucide-react";
@@ -17,6 +20,22 @@ interface Ach {
   xp_reward: number;
 }
 
+async function fetchAchievements(userId?: string) {
+  const [{ data: achievements }, { data: userAchievements }] = await Promise.all([
+    supabase.from("achievements").select("*"),
+    userId
+      ? supabase.from("user_achievements").select("achievement_id").eq("user_id", userId)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  return {
+    all: (achievements as Ach[]) ?? [],
+    earnedIds: new Set(
+      (((userAchievements ?? []) as { achievement_id: string }[]).map((x) => x.achievement_id)),
+    ),
+  };
+}
+
 const iconMap: Record<string, typeof Sparkles> = {
   sparkles: Sparkles,
   flame: Flame,
@@ -26,19 +45,14 @@ const iconMap: Record<string, typeof Sparkles> = {
 
 function AchievementsPage() {
   const { user } = useAuth();
-  const [all, setAll] = useState<Ach[]>([]);
-  const [earned, setEarned] = useState<Set<string>>(new Set());
+  const { data } = useQuery({
+    queryKey: ["achievements", user?.id ?? null],
+    queryFn: () => fetchAchievements(user?.id),
+    staleTime: 2 * 60_000,
+  });
 
-  useEffect(() => {
-    void (async () => {
-      const [{ data: a }, { data: ua }] = await Promise.all([
-        supabase.from("achievements").select("*"),
-        user ? supabase.from("user_achievements").select("achievement_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
-      ]);
-      setAll((a as Ach[]) ?? []);
-      setEarned(new Set(((ua ?? []) as { achievement_id: string }[]).map((x) => x.achievement_id)));
-    })();
-  }, [user]);
+  const all = data?.all ?? [];
+  const earned = useMemo(() => data?.earnedIds ?? new Set<string>(), [data]);
 
   return (
     <div className="space-y-6 animate-float-up">

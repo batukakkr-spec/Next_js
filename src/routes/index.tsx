@@ -1,10 +1,12 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+"use client";
+
+import Image from "next/image";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useAuth } from "@/lib/auth";
+import { BrandLogo } from "@/components/BrandLogo";
 import heroBg from "@/assets/hero-bg.jpg";
 import heroCharacter from "@/assets/xuchtrack-hero-character.png";
 import appIcon from "@/assets/xuchtrack-app-icon.png";
-import brandLogo from "@/assets/xuchtrack-logo.png";
 import xHudImage from "@/assets/SDSAD.png";
 import shadowCoachMascot from "@/assets/DASDADS.png";
 import {
@@ -62,17 +64,14 @@ const HERO_PARTICLES = [
 ] as const;
 
 function Landing() {
-  const { isAuthenticated, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && isAuthenticated) navigate({ to: "/dashboard" });
-  }, [loading, isAuthenticated, navigate]);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) =>
-        entries.forEach((e) => e.isIntersecting && e.target.classList.add("reveal-shown")),
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add("reveal-shown");
+          observer.unobserve(e.target);
+        }),
       { threshold: 0.08 },
     );
     document.querySelectorAll(".reveal-hidden").forEach((el) => observer.observe(el));
@@ -83,21 +82,22 @@ function Landing() {
     <div className="min-h-screen relative overflow-hidden scroll-smooth">
       {/* ── Animated Background ── */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
-        <img
+        <Image
           src={heroBg}
           alt=""
           aria-hidden="true"
+          fill
+          priority
+          sizes="100vw"
           className="w-full h-[90vh] object-cover opacity-[0.18]"
-          width={1920}
-          height={1280}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/82 to-background" />
         <div className="absolute inset-0 scanline opacity-20" />
-        <div className="absolute top-[8%] -left-40 w-[40rem] h-[40rem] rounded-full bg-primary/22 blur-[150px] animate-pulse-glow" />
+        <div className="absolute top-[8%] -left-40 h-[40rem] w-[40rem] rounded-full bg-primary/18 blur-[150px] animate-pulse-glow" />
         {/* Purple blob — right side matching X logo */}
         <div
           className="absolute top-[30%] -right-36 w-[44rem] h-[44rem] rounded-full blur-[160px] animate-pulse-glow"
-          style={{ background: "oklch(0.58 0.28 290 / 0.22)", animationDelay: "1.6s" }}
+          style={{ background: "oklch(0.46 0.20 296 / 0.20)", animationDelay: "1.6s" }}
         />
         <div
           className="absolute bottom-[5%] left-[28%] w-[30rem] h-[30rem] rounded-full bg-primary-glow/14 blur-[130px] animate-pulse-glow"
@@ -113,10 +113,10 @@ function Landing() {
               top: p.y,
               width: `${p.s}px`,
               height: `${p.s}px`,
-              background: p.p ? "oklch(0.72 0.30 290)" : "oklch(0.92 0.22 215)",
+              background: p.p ? "oklch(0.72 0.20 302)" : "oklch(0.82 0.18 304)",
               boxShadow: p.p
-                ? "0 0 10px oklch(0.72 0.30 290 / 0.85), 0 0 20px oklch(0.58 0.28 290 / 0.45)"
-                : "0 0 10px oklch(0.92 0.22 215 / 0.85), 0 0 20px oklch(0.85 0.22 215 / 0.45)",
+                ? "0 0 10px oklch(0.72 0.20 302 / 0.85), 0 0 20px oklch(0.46 0.20 296 / 0.42)"
+                : "0 0 10px oklch(0.82 0.18 304 / 0.82), 0 0 20px oklch(0.62 0.18 300 / 0.42)",
               animation: `particle-float ${p.dur}s ease-in-out ${p.d}s infinite`,
             }}
           />
@@ -142,24 +142,7 @@ function Landing() {
 
       {/* ── Nav ── */}
       <header className="container mx-auto flex items-center justify-between px-6 py-5 relative z-10">
-        <div className="flex items-center gap-3">
-          <div className="relative w-[52px] h-[52px] flex items-center justify-center">
-            <div className="absolute inset-0 bg-primary/25 blur-xl rounded-full" />
-            <img
-              src={brandLogo}
-              alt="XuchTrack"
-              className="relative w-11 h-11 object-contain drop-shadow-[0_0_24px_oklch(0.85_0.22_215/0.8)]"
-            />
-          </div>
-          <div className="leading-tight">
-            <span className="block text-2xl font-black tracking-wide text-foreground">
-              XuchTrack
-            </span>
-            <p className="system-label text-[10px] tracking-[0.35em] text-primary-glow/80">
-              AI FITNESS SYSTEM
-            </p>
-          </div>
-        </div>
+        <BrandLogo size="md" className="max-w-full" />
         <nav className="flex items-center gap-6 lg:gap-8">
           <a
             href="#features"
@@ -208,7 +191,7 @@ function Landing() {
           className="absolute inset-0 -z-10 opacity-[0.06] pointer-events-none"
           style={{
             backgroundImage:
-              "linear-gradient(oklch(0.7 0.2 230) 1px, transparent 1px), linear-gradient(90deg, oklch(0.7 0.2 230) 1px, transparent 1px)",
+              "linear-gradient(oklch(0.52 0.16 294) 1px, transparent 1px), linear-gradient(90deg, oklch(0.52 0.16 294) 1px, transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
@@ -230,8 +213,8 @@ function Landing() {
               className="block bg-clip-text text-transparent"
               style={{
                 backgroundImage:
-                  "linear-gradient(90deg, oklch(0.92 0.22 215) 0%, oklch(0.78 0.18 220) 45%, oklch(0.70 0.28 290) 100%)",
-                filter: "drop-shadow(0 0 48px oklch(0.7 0.25 230 / 0.7))",
+                  "linear-gradient(90deg, oklch(0.88 0.18 304) 0%, oklch(0.70 0.18 300) 45%, oklch(0.50 0.22 296) 100%)",
+                filter: "drop-shadow(0 0 48px oklch(0.52 0.18 294 / 0.62))",
               }}
             >
               Track every rep.
@@ -331,12 +314,9 @@ function Landing() {
             <div className="orbital orbital-b" />
           </div>
           <div className="absolute top-[14%] left-[2%] glass-panel frame-corner px-3 py-3 z-10 hidden sm:flex items-center gap-3 animate-float-gentle">
-            <img src={brandLogo} alt="XuchTrack brand mark" className="w-10 h-10 object-contain" />
             <div>
               <p className="system-label text-[8px] text-muted-foreground mb-1">Hunter Class</p>
-              <p className="text-xs tracking-[0.24em] uppercase text-primary-glow">
-                Fitness Monarch
-              </p>
+              <BrandLogo size="sm" className="scale-[0.95] origin-left" />
             </div>
           </div>
           {/* Floating rank card */}
@@ -394,9 +374,12 @@ function Landing() {
                 className="absolute inset-0 rounded-2xl blur-md"
                 style={{ background: "oklch(0.58 0.28 290 / 0.55)" }}
               />
-              <img
+              <Image
                 src={appIcon}
                 alt="XuchTrack App"
+                width={56}
+                height={56}
+                sizes="56px"
                 className="relative w-14 h-14 object-cover rounded-2xl"
                 style={{
                   boxShadow:
@@ -408,17 +391,23 @@ function Landing() {
           </div>
           {/* X HUD portal — ambient glow layer behind warrior */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <img
+            <Image
               src={xHudImage}
               alt=""
               aria-hidden="true"
+              width={950}
+              height={950}
+              sizes="(max-width: 1024px) 100vw, 950px"
+              loading="lazy"
               className="hero-board-backdrop w-[100%] max-w-[950px] h-auto animate-pulse-glow"
               style={{ animationDelay: "0.8s" }}
             />
           </div>
-          <img
+          <Image
             src={heroCharacter}
             alt="XuchTrack neon hunter warrior"
+            priority
+            sizes="(max-width: 1024px) 100vw, 940px"
             className="hero-character relative w-full max-w-[860px] lg:max-w-[940px] h-auto"
             width={1024}
             height={1024}
@@ -452,14 +441,16 @@ function Landing() {
       </section>
 
       {/* ── Shadow Coach ── */}
-      <section className="container mx-auto px-6 py-20">
+      <section className="container mx-auto px-6 py-20 defer-section">
         <div className="relative glass-panel frame-corner overflow-hidden">
           {/* ai-assistant.jpg as ambient background */}
           <div className="absolute inset-0 -z-10">
-            <img
+            <Image
               src={heroBg}
               alt=""
               aria-hidden="true"
+              fill
+              sizes="100vw"
               className="w-full h-full object-cover opacity-[0.06]"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95" />
@@ -477,12 +468,14 @@ function Landing() {
                 <div className="w-[60%] aspect-square rounded-full border border-accent/30 animate-[spin_50s_linear_infinite]" />
                 <div className="absolute w-[45%] aspect-square rounded-full border border-accent/20" />
               </div>
-              <img
+              <Image
                 src={appIcon}
                 alt="Shadow Coach — AI Fitness Companion"
-                className="relative w-full max-w-[380px] h-auto rounded-[2rem] drop-shadow-[0_0_80px_oklch(0.55_0.28_290/0.85)]"
                 width={512}
                 height={512}
+                sizes="(max-width: 1024px) 80vw, 380px"
+                className="relative w-full max-w-[380px] h-auto rounded-[2rem] drop-shadow-[0_0_80px_oklch(0.55_0.28_290/0.85)]"
+                loading="lazy"
               />
             </div>
 
@@ -570,7 +563,7 @@ function Landing() {
       </section>
 
       {/* ── Skills / Features ── */}
-      <section id="skills" className="container mx-auto px-6 py-28 scroll-mt-20">
+      <section id="skills" className="container mx-auto px-6 py-28 scroll-mt-20 defer-section">
         <div className="text-center max-w-2xl mx-auto mb-16 reveal-hidden">
           <p className="system-label text-[10px] text-primary-glow mb-3">▸ Hunter Skill Tree</p>
           <h2 className="text-3xl lg:text-5xl font-bold glow-text mb-4">Your Arsenal of Victory</h2>
@@ -655,7 +648,7 @@ function Landing() {
       </section>
 
       {/* ── Hunter Rank Progression ── */}
-      <section id="ranks" className="container mx-auto px-6 py-20 scroll-mt-20">
+      <section id="ranks" className="container mx-auto px-6 py-20 scroll-mt-20 defer-section">
         <div className="relative glass-panel frame-corner p-10 lg:p-16 overflow-hidden">
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/8 via-accent/5 to-primary-glow/8" />
           <div className="absolute inset-0 scanline opacity-10 -z-10" />
@@ -750,7 +743,7 @@ function Landing() {
       </section>
 
       {/* ── App Preview / System ── */}
-      <section id="system" className="container mx-auto px-6 py-24 scroll-mt-20">
+      <section id="system" className="container mx-auto px-6 py-24 scroll-mt-20 defer-section">
         <div className="text-center max-w-2xl mx-auto mb-14 reveal-hidden">
           <p className="system-label text-[10px] text-primary-glow mb-3">▸ Hunter Status System</p>
           <h2 className="text-3xl lg:text-5xl font-bold glow-text mb-4">Your Command Center</h2>
@@ -841,9 +834,12 @@ function Landing() {
                     }}
                   />
                 </div>
-                <img
+                <Image
                   src={shadowCoachMascot}
                   alt="XuchTrack quest portal"
+                  width={460}
+                  height={460}
+                  sizes="(max-width: 1024px) 90vw, 460px"
                   className="quest-preview-image relative w-full max-w-[460px] h-auto"
                   loading="lazy"
                 />
@@ -862,7 +858,7 @@ function Landing() {
       </section>
 
       {/* ── Hunter Field Reports (Testimonials) ── */}
-      <section className="container mx-auto px-6 py-24">
+      <section className="container mx-auto px-6 py-24 defer-section">
         <div className="text-center max-w-2xl mx-auto mb-14 reveal-hidden">
           <p className="system-label text-[10px] text-primary-glow mb-3">▸ Hunter Field Reports</p>
           <h2 className="text-3xl lg:text-4xl font-bold glow-text mb-4">Hunters Who Ascended</h2>
@@ -949,7 +945,7 @@ function Landing() {
       </section>
 
       {/* ── Benefits ── */}
-      <section id="benefits" className="container mx-auto px-6 py-24 scroll-mt-20">
+      <section id="benefits" className="container mx-auto px-6 py-24 scroll-mt-20 defer-section">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="reveal-hidden">
             <p className="system-label text-[10px] text-primary-glow mb-3">▸ System Advantages</p>
@@ -1020,7 +1016,7 @@ function Landing() {
       </section>
 
       {/* ── Final CTA ── */}
-      <section className="container mx-auto px-6 py-24">
+      <section className="container mx-auto px-6 py-24 defer-section">
         <div className="relative glass-panel frame-corner p-10 lg:p-20 text-center overflow-hidden animate-gate-pulse reveal-hidden">
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/12 via-accent/8 to-primary-glow/12" />
           <div className="absolute inset-0 scanline opacity-12 -z-10" />
@@ -1067,17 +1063,7 @@ function Landing() {
       <footer className="border-t border-primary/15 mt-8">
         <div className="container mx-auto px-6 py-12 grid md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="relative w-9 h-9 flex items-center justify-center">
-                <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
-                <img
-                  src={brandLogo}
-                  alt="XuchTrack"
-                  className="relative w-8 h-8 object-contain drop-shadow-[0_0_10px_oklch(0.85_0.22_215/0.7)]"
-                />
-              </div>
-              <span className="font-bold tracking-[0.3em] glow-text">XuchTrack</span>
-            </div>
+            <BrandLogo size="sm" className="mb-3" />
             <p className="text-sm text-muted-foreground">
               The Hunter System for those who refuse to stay at E-Rank.
             </p>
