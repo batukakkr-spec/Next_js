@@ -12,13 +12,7 @@ type OutletContextValue = ReactNode;
 
 const OutletContext = createContext<OutletContextValue>(null);
 
-export function OutletProvider({
-  children,
-  outlet,
-}: {
-  children: ReactNode;
-  outlet: ReactNode;
-}) {
+export function OutletProvider({ children, outlet }: { children: ReactNode; outlet: ReactNode }) {
   return <OutletContext.Provider value={outlet}>{children}</OutletContext.Provider>;
 }
 

@@ -1,13 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const LeaderboardPage = dynamic(
-  () => import("@/routes/_app.leaderboard").then((mod) => mod.Route.component),
-  {
-    ssr: false,
-    loading: () => <div className="p-6 text-sm text-muted-foreground">Loading leaderboard…</div>,
-  },
+const LeaderboardPage = createAppRoutePage(
+  () => import("@/routes/_app.leaderboard"),
+  "leaderboard",
 );
 
 export default LeaderboardPage;

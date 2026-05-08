@@ -49,12 +49,7 @@ export async function POST(request: Request) {
 
     const userId = user.id;
 
-    const [
-      achievementsResult,
-      xpLogsResult,
-      userQuestsResult,
-      profileResult,
-    ] = await Promise.all([
+    const [achievementsResult, xpLogsResult, userQuestsResult, profileResult] = await Promise.all([
       supabaseAdmin.from("user_achievements").delete().eq("user_id", userId),
       supabaseAdmin.from("xp_logs").delete().eq("user_id", userId),
       supabaseAdmin.from("user_quests").delete().eq("user_id", userId),

@@ -1,13 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const AchievementsPage = dynamic(
-  () => import("@/routes/_app.achievements").then((mod) => mod.Route.component),
-  {
-    ssr: false,
-    loading: () => <div className="p-6 text-sm text-muted-foreground">Loading achievements…</div>,
-  },
+const AchievementsPage = createAppRoutePage(
+  () => import("@/routes/_app.achievements"),
+  "achievements",
 );
 
 export default AchievementsPage;

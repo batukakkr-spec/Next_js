@@ -1,6 +1,24 @@
 import type { Metadata } from "next";
+import { Orbitron, Rajdhani, Share_Tech_Mono } from "next/font/google";
 import "../src/styles.css";
 import { Providers } from "./providers";
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+});
+
+const rajdhani = Rajdhani({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-rajdhani",
+});
+
+const shareTechMono = Share_Tech_Mono({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-share-tech-mono",
+});
 
 export const metadata: Metadata = {
   title: "XuchTrack - Gamified Quest System",
@@ -15,15 +33,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap"
-        />
-      </head>
+    <html
+      lang="en"
+      className={`dark ${orbitron.variable} ${rajdhani.variable} ${shareTechMono.variable}`}
+    >
       <body>
         <Providers>{children}</Providers>
       </body>

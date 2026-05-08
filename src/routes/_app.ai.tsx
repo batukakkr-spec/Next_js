@@ -278,7 +278,6 @@ function AIPage() {
             {t.subtitle(profile?.level, profile?.xp, profile?.xp_to_next)}
           </p>
         </div>
-        {/* Language toggle — visible top-right */}
         <div className="flex w-full flex-col items-center gap-2 sm:w-auto">
           <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
             <Languages className="w-3 h-3" /> {t.langLabel}
@@ -303,10 +302,11 @@ function AIPage() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px]">
-        <div
-          className="glass-panel frame-corner flex min-h-[420px] flex-col p-3 sm:p-4 lg:min-h-[480px] lg:p-6"
-        >
-          <div ref={scroller} className="max-h-[58vh] flex-1 space-y-4 overflow-y-auto pr-1 sm:pr-2">
+        <div className="glass-panel frame-corner flex min-h-[420px] flex-col p-3 sm:p-4 lg:min-h-[480px] lg:p-6">
+          <div
+            ref={scroller}
+            className="max-h-[58vh] flex-1 space-y-4 overflow-y-auto pr-1 sm:pr-2"
+          >
             {messages.map((m, i) => (
               <div
                 key={i}
@@ -476,7 +476,7 @@ function AIPage() {
             <button
               key={p}
               onClick={() => void send(p)}
-            className="flex w-full items-start gap-2 rounded border border-border px-3 py-2 text-left text-xs transition hover:bg-secondary/40"
+              className="flex w-full items-start gap-2 rounded border border-border px-3 py-2 text-left text-xs transition hover:bg-secondary/40"
             >
               <Sparkles className="w-3 h-3 text-primary-glow" /> {p}
             </button>

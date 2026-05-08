@@ -45,9 +45,7 @@ interface XpLog {
 }
 
 function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value,
-  );
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 function isMissingCompleteQuestRpc(message?: string) {
@@ -297,7 +295,6 @@ function Dashboard() {
 
   return (
     <div className="space-y-6 animate-float-up">
-      {/* Header */}
       <div className="glass-panel frame-corner relative overflow-hidden px-4 py-4 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_48%,oklch(0.48_0.2_286/0.26),transparent_18%),radial-gradient(circle_at_60%_16%,oklch(0.76_0.14_295/0.14),transparent_18%),linear-gradient(180deg,oklch(0.17_0.045_286/0.99),oklch(0.11_0.03_276/1))]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-glow/80 to-transparent" />
@@ -388,7 +385,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Active quests */}
       <section className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 glass-panel frame-corner p-6">
           <div className="flex items-center justify-between mb-4">

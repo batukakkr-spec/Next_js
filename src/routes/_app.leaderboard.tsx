@@ -47,62 +47,62 @@ function Leaderboard() {
       <div className="glass-panel frame-corner overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[540px] text-sm">
-          <thead className="bg-secondary/40 text-xs uppercase tracking-widest text-muted-foreground">
-            <tr>
-              <th className="text-left p-3 w-16">Place</th>
-              <th className="text-left p-3">Hunter</th>
-              <th className="text-center p-3 hidden sm:table-cell">Class</th>
-              <th className="text-right p-3">Level</th>
-              <th className="text-right p-3 hidden sm:table-cell">XP</th>
-              <th className="text-right p-3 hidden md:table-cell">Streak</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => {
-              const RankIcon = i === 0 ? Crown : i === 1 ? Trophy : i === 2 ? Medal : null;
-              return (
-                <tr key={r.user_id} className="border-t border-border hover:bg-secondary/20">
-                  <td className="p-3 font-bold">
-                    {RankIcon ? (
-                      <RankIcon
-                        className={`w-5 h-5 ${i === 0 ? "text-warning" : i === 1 ? "text-primary-glow" : "text-muted-foreground"}`}
-                      />
-                    ) : (
-                      `#${i + 1}`
-                    )}
-                  </td>
-                  <td className="p-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold">{r.displayName}</p>
+            <thead className="bg-secondary/40 text-xs uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th className="text-left p-3 w-16">Place</th>
+                <th className="text-left p-3">Hunter</th>
+                <th className="text-center p-3 hidden sm:table-cell">Class</th>
+                <th className="text-right p-3">Level</th>
+                <th className="text-right p-3 hidden sm:table-cell">XP</th>
+                <th className="text-right p-3 hidden md:table-cell">Streak</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => {
+                const RankIcon = i === 0 ? Crown : i === 1 ? Trophy : i === 2 ? Medal : null;
+                return (
+                  <tr key={r.user_id} className="border-t border-border hover:bg-secondary/20">
+                    <td className="p-3 font-bold">
+                      {RankIcon ? (
+                        <RankIcon
+                          className={`w-5 h-5 ${i === 0 ? "text-warning" : i === 1 ? "text-primary-glow" : "text-muted-foreground"}`}
+                        />
+                      ) : (
+                        `#${i + 1}`
+                      )}
+                    </td>
+                    <td className="p-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-semibold">{r.displayName}</p>
+                        <span
+                          className={`inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-[10px] font-black tracking-[0.2em] sm:hidden ${r.rankClass}`}
+                        >
+                          {r.rank}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">@{r.username ?? "—"}</p>
+                    </td>
+                    <td className="p-3 text-center hidden sm:table-cell">
                       <span
-                        className={`inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-[10px] font-black tracking-[0.2em] sm:hidden ${r.rankClass}`}
+                        className={`inline-flex items-center justify-center rounded-md border px-2.5 py-1 text-xs font-black tracking-[0.25em] ${r.rankClass}`}
                       >
                         {r.rank}
                       </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">@{r.username ?? "—"}</p>
+                    </td>
+                    <td className="p-3 text-right font-bold glow-text">{r.level}</td>
+                    <td className="p-3 text-right hidden sm:table-cell">{r.xp}</td>
+                    <td className="p-3 text-right hidden md:table-cell">🔥 {r.streakDays}</td>
+                  </tr>
+                );
+              })}
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-10 text-center text-muted-foreground">
+                    No Hunters yet.
                   </td>
-                  <td className="p-3 text-center hidden sm:table-cell">
-                    <span
-                      className={`inline-flex items-center justify-center rounded-md border px-2.5 py-1 text-xs font-black tracking-[0.25em] ${r.rankClass}`}
-                    >
-                      {r.rank}
-                    </span>
-                  </td>
-                  <td className="p-3 text-right font-bold glow-text">{r.level}</td>
-                  <td className="p-3 text-right hidden sm:table-cell">{r.xp}</td>
-                  <td className="p-3 text-right hidden md:table-cell">🔥 {r.streakDays}</td>
                 </tr>
-              );
-            })}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={6} className="p-10 text-center text-muted-foreground">
-                  No Hunters yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
+              )}
+            </tbody>
           </table>
         </div>
       </div>

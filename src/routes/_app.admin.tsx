@@ -1,7 +1,7 @@
 "use client";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { buildLeaderboardEntries } from "@/lib/leaderboard";
@@ -152,6 +152,7 @@ function AdminPage() {
   const { hasRole, loading, user } = useAuth();
   const navigate = useNavigate();
   const [quests, setQuests] = useState<Quest[]>([]);
+  const [userCount, setUserCount] = useState(0);
   const [analyticsSource, setAnalyticsSource] = useState<AnalyticsSource | null>(null);
   const [reloading, setReloading] = useState(false);
 
@@ -162,27 +163,13 @@ function AdminPage() {
     }
   }, [loading, hasRole, navigate]);
 
-  const load = async () => {
-    const [
-      { data: q, error: questError },
-      { data: u, error: userError },
-      { data: roleRows, error: roleError },
-      { data: userQuestRows, error: userQuestError },
-      { data: xpLogRows, error: xpLogError },
-    ] = await Promise.all([
+  const loadSummary = useCallback(async () => {
+    const [{ data: q, error: questError }, { data: u, error: userError }] = await Promise.all([
       supabase.from("quests").select("*").order("created_at", { ascending: false }),
       supabase
         .from("profiles")
         .select("user_id, username, display_name, level, xp, streak_days")
         .order("level", { ascending: false }),
-      supabase.from("user_roles").select("user_id, role"),
-      supabase
-        .from("user_quests")
-        .select("id, user_id, quest_id, status, created_at, completed_at")
-        .order("created_at", { ascending: false }),
-      supabase.from("xp_logs").select("id, user_id, amount, created_at").order("created_at", {
-        ascending: false,
-      }),
     ]);
 
     if (questError) {
@@ -193,49 +180,81 @@ function AdminPage() {
       throw userError;
     }
 
-    if (roleError) {
-      throw roleError;
-    }
+    const nextQuests = (q as Quest[]) ?? [];
+    const nextUsers = ((u ?? []) as (Omit<UserRow, "roles"> & { streak_days: number })[]) ?? [];
 
-    if (userQuestError) {
-      throw userQuestError;
-    }
+    setQuests(nextQuests);
+    setUserCount(nextUsers.length);
 
-    if (xpLogError) {
-      throw xpLogError;
-    }
+    return {
+      quests: nextQuests,
+      users: nextUsers,
+    };
+  }, []);
 
-    const rolesByUser = new Map<string, UserRow["roles"]>();
-    for (const row of (roleRows ?? []) as { user_id: string; role: UserRow["roles"][number] }[]) {
-      const existing = rolesByUser.get(row.user_id) ?? [];
-      if (!existing.includes(row.role)) {
-        existing.push(row.role);
+  const loadAnalytics = useCallback(
+    async (summary?: {
+      quests: Quest[];
+      users: Array<Omit<UserRow, "roles"> & { streak_days: number }>;
+    }) => {
+      const base =
+        summary ??
+        (await loadSummary().catch((error) => {
+          throw error;
+        }));
+
+      const [
+        { data: roleRows, error: roleError },
+        { data: userQuestRows, error: userQuestError },
+        { data: xpLogRows, error: xpLogError },
+      ] = await Promise.all([
+        supabase.from("user_roles").select("user_id, role"),
+        supabase
+          .from("user_quests")
+          .select("id, user_id, quest_id, status, created_at, completed_at")
+          .order("created_at", { ascending: false }),
+        supabase.from("xp_logs").select("id, user_id, amount, created_at").order("created_at", {
+          ascending: false,
+        }),
+      ]);
+
+      if (roleError) {
+        throw roleError;
       }
-      rolesByUser.set(row.user_id, existing);
-    }
 
-    setQuests((q as Quest[]) ?? []);
-    setAnalyticsSource({
-      quests: (q as Quest[]) ?? [],
-      users: ((u ?? []) as (Omit<UserRow, "roles"> & { streak_days: number })[]) ?? [],
-      roles: ((roleRows ?? []) as { user_id: string; role: UserRow["roles"][number] }[]) ?? [],
-      userQuests: (userQuestRows as UserQuestRow[]) ?? [],
-      xpLogs: (xpLogRows as XpLogRow[]) ?? [],
-    });
-  };
+      if (userQuestError) {
+        throw userQuestError;
+      }
+
+      if (xpLogError) {
+        throw xpLogError;
+      }
+      setAnalyticsSource({
+        quests: base.quests,
+        users: base.users,
+        roles: ((roleRows ?? []) as { user_id: string; role: UserRow["roles"][number] }[]) ?? [],
+        userQuests: (userQuestRows as UserQuestRow[]) ?? [],
+        xpLogs: (xpLogRows as XpLogRow[]) ?? [],
+      });
+    },
+    [loadSummary],
+  );
 
   useEffect(() => {
     if (!hasRole("admin")) return;
 
-    void load().catch((error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to load admin data");
-    });
-  }, [hasRole]);
+    void loadSummary()
+      .then((summary) => loadAnalytics(summary))
+      .catch((error) => {
+        toast.error(error instanceof Error ? error.message : "Failed to load admin data");
+      });
+  }, [hasRole, loadAnalytics, loadSummary]);
 
   const reloadAdminData = async () => {
     setReloading(true);
     try {
-      await load();
+      const summary = await loadSummary();
+      await loadAnalytics(summary);
       toast.success("Admin data refreshed");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to reload admin data");
@@ -264,9 +283,7 @@ function AdminPage() {
           </div>
           <div className="rounded-md border border-primary/20 bg-secondary/30 px-4 py-2 text-sm">
             <span className="text-muted-foreground">Users:</span>{" "}
-            <span className="font-semibold text-primary-glow">
-              {analyticsSource?.users.length ?? 0}
-            </span>
+            <span className="font-semibold text-primary-glow">{userCount}</span>
           </div>
           <button
             type="button"

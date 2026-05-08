@@ -239,8 +239,10 @@ function buildConversationTranscript(messages: AICoachConversationMessage[]) {
 }
 
 function inferRequestedCategory(user: AICoachUserContext): QuestCategory | null {
-  const text = `${user.latestRequest}\n${buildConversationTranscript(user.conversation)}`.toLowerCase();
-  if (/(workout|gym|exercise|cardio|fitness|bulchin|fitn|дасгал|бэлтгэл)/i.test(text)) return "fitness";
+  const text =
+    `${user.latestRequest}\n${buildConversationTranscript(user.conversation)}`.toLowerCase();
+  if (/(workout|gym|exercise|cardio|fitness|bulchin|fitn|дасгал|бэлтгэл)/i.test(text))
+    return "fitness";
   if (/(study|learn|exam|reading|course|leetcode|сурах|шалгалт|хичээл)/i.test(text)) return "study";
   if (/(work|career|project|deep work|focus|ажил|төсөл)/i.test(text)) return "work";
   if (/(meditate|journal|mental|sleep|mind|амралт|бясалгал|сэтгэл)/i.test(text)) return "mind";
@@ -362,10 +364,7 @@ function extractOutputText(payload: unknown) {
   return aggregatedText;
 }
 
-async function requestStructuredWorkoutPlan(
-  user: AICoachUserContext,
-  retryInstruction?: string,
-) {
+async function requestStructuredWorkoutPlan(user: AICoachUserContext, retryInstruction?: string) {
   const { apiKey, model } = getOpenAIConfig();
   const latestRequest =
     user.latestRequest || "Build a 7-day weekly task plan based on my requirements.";
@@ -485,15 +484,33 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
         focusEn: "Strength and movement",
         focusMn: "Хүч ба хөдөлгөөн",
         tasks: [
-          fallbackTask("Main session", "Complete a focused strength or bodyweight session.", 45, "Finish the full session.", "fitness"),
-          fallbackTask("Mobility reset", "Do a short mobility block after training.", 12, "Complete 3-5 mobility drills.", "fitness"),
+          fallbackTask(
+            "Main session",
+            "Complete a focused strength or bodyweight session.",
+            45,
+            "Finish the full session.",
+            "fitness",
+          ),
+          fallbackTask(
+            "Mobility reset",
+            "Do a short mobility block after training.",
+            12,
+            "Complete 3-5 mobility drills.",
+            "fitness",
+          ),
         ],
       },
       {
         focusEn: "Cardio and recovery",
         focusMn: "Кардио ба сэргэлт",
         tasks: [
-          fallbackTask("Zone 2 cardio", "Do easy cardio at a sustainable pace.", 30, "Maintain steady effort for the full duration.", "fitness"),
+          fallbackTask(
+            "Zone 2 cardio",
+            "Do easy cardio at a sustainable pace.",
+            30,
+            "Maintain steady effort for the full duration.",
+            "fitness",
+          ),
         ],
       },
     ],
@@ -502,15 +519,33 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
         focusEn: "Deep study block",
         focusMn: "Гүн суралцах блок",
         tasks: [
-          fallbackTask("Core study sprint", "Study the highest-priority topic without distractions.", 60, "Finish one focused block.", "study"),
-          fallbackTask("Recall review", "Summarize what you learned from memory.", 20, "Write a short recall sheet.", "study"),
+          fallbackTask(
+            "Core study sprint",
+            "Study the highest-priority topic without distractions.",
+            60,
+            "Finish one focused block.",
+            "study",
+          ),
+          fallbackTask(
+            "Recall review",
+            "Summarize what you learned from memory.",
+            20,
+            "Write a short recall sheet.",
+            "study",
+          ),
         ],
       },
       {
         focusEn: "Practice and revision",
         focusMn: "Дадлага ба давтлага",
         tasks: [
-          fallbackTask("Problem set", "Work through practical questions or exercises.", 45, "Complete at least 5-10 problems.", "study"),
+          fallbackTask(
+            "Problem set",
+            "Work through practical questions or exercises.",
+            45,
+            "Complete at least 5-10 problems.",
+            "study",
+          ),
         ],
       },
     ],
@@ -519,15 +554,33 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
         focusEn: "Deep work",
         focusMn: "Гүн ажил",
         tasks: [
-          fallbackTask("Priority deliverable", "Advance the most important project task.", 90, "Ship one meaningful chunk.", "work"),
-          fallbackTask("Admin cleanup", "Clear blockers, messages, or follow-ups.", 25, "Empty the highest-priority admin list.", "work"),
+          fallbackTask(
+            "Priority deliverable",
+            "Advance the most important project task.",
+            90,
+            "Ship one meaningful chunk.",
+            "work",
+          ),
+          fallbackTask(
+            "Admin cleanup",
+            "Clear blockers, messages, or follow-ups.",
+            25,
+            "Empty the highest-priority admin list.",
+            "work",
+          ),
         ],
       },
       {
         focusEn: "Execution and review",
         focusMn: "Гүйцэтгэл ба дүгнэлт",
         tasks: [
-          fallbackTask("Progress checkpoint", "Review output quality and next blockers.", 20, "Document the next 3 actions.", "work"),
+          fallbackTask(
+            "Progress checkpoint",
+            "Review output quality and next blockers.",
+            20,
+            "Document the next 3 actions.",
+            "work",
+          ),
         ],
       },
     ],
@@ -536,15 +589,33 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
         focusEn: "Mental reset",
         focusMn: "Сэтгэлийн reset",
         tasks: [
-          fallbackTask("Journaling", "Write a short reflection about energy and priorities.", 15, "Complete one honest journal entry.", "mind"),
-          fallbackTask("Meditation", "Sit quietly and regulate breathing.", 12, "Finish the full timer.", "mind"),
+          fallbackTask(
+            "Journaling",
+            "Write a short reflection about energy and priorities.",
+            15,
+            "Complete one honest journal entry.",
+            "mind",
+          ),
+          fallbackTask(
+            "Meditation",
+            "Sit quietly and regulate breathing.",
+            12,
+            "Finish the full timer.",
+            "mind",
+          ),
         ],
       },
       {
         focusEn: "Sleep and calm",
         focusMn: "Нойр ба тайван байдал",
         tasks: [
-          fallbackTask("Evening wind-down", "Reduce stimulation before sleep.", 20, "Stay off high-stimulation apps before bed.", "mind"),
+          fallbackTask(
+            "Evening wind-down",
+            "Reduce stimulation before sleep.",
+            20,
+            "Stay off high-stimulation apps before bed.",
+            "mind",
+          ),
         ],
       },
     ],
@@ -553,15 +624,33 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
         focusEn: "Connection",
         focusMn: "Харилцаа",
         tasks: [
-          fallbackTask("Meaningful outreach", "Message or call someone you want to stay connected with.", 20, "Complete one real conversation.", "social"),
-          fallbackTask("Shared activity", "Plan or join a simple social interaction.", 45, "Schedule or attend one activity.", "social"),
+          fallbackTask(
+            "Meaningful outreach",
+            "Message or call someone you want to stay connected with.",
+            20,
+            "Complete one real conversation.",
+            "social",
+          ),
+          fallbackTask(
+            "Shared activity",
+            "Plan or join a simple social interaction.",
+            45,
+            "Schedule or attend one activity.",
+            "social",
+          ),
         ],
       },
       {
         focusEn: "Follow-through",
         focusMn: "Дуусгалт",
         tasks: [
-          fallbackTask("Follow-up", "Reply to pending messages or commitments.", 20, "Clear your top social loose ends.", "social"),
+          fallbackTask(
+            "Follow-up",
+            "Reply to pending messages or commitments.",
+            20,
+            "Clear your top social loose ends.",
+            "social",
+          ),
         ],
       },
     ],
@@ -570,15 +659,33 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
         focusEn: "Creative output",
         focusMn: "Бүтээлч гаргалгаа",
         tasks: [
-          fallbackTask("Create something small", "Make progress on a creative piece.", 60, "Produce one draft, sketch, or iteration.", "creative"),
-          fallbackTask("Reference study", "Study inspiration without over-consuming.", 20, "Save 3 useful references.", "creative"),
+          fallbackTask(
+            "Create something small",
+            "Make progress on a creative piece.",
+            60,
+            "Produce one draft, sketch, or iteration.",
+            "creative",
+          ),
+          fallbackTask(
+            "Reference study",
+            "Study inspiration without over-consuming.",
+            20,
+            "Save 3 useful references.",
+            "creative",
+          ),
         ],
       },
       {
         focusEn: "Refinement",
         focusMn: "Сайжруулалт",
         tasks: [
-          fallbackTask("Polish one piece", "Improve something you already started.", 40, "Finish one revision pass.", "creative"),
+          fallbackTask(
+            "Polish one piece",
+            "Improve something you already started.",
+            40,
+            "Finish one revision pass.",
+            "creative",
+          ),
         ],
       },
     ],
@@ -587,15 +694,33 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
         focusEn: "Priority execution",
         focusMn: "Гол зорилтын гүйцэтгэл",
         tasks: [
-          fallbackTask("Main task block", "Work on the most important task you described.", 60, "Finish one focused block.", "general"),
-          fallbackTask("Short review", "Review progress and adjust tomorrow's target.", 15, "Write tomorrow's next step.", "general"),
+          fallbackTask(
+            "Main task block",
+            "Work on the most important task you described.",
+            60,
+            "Finish one focused block.",
+            "general",
+          ),
+          fallbackTask(
+            "Short review",
+            "Review progress and adjust tomorrow's target.",
+            15,
+            "Write tomorrow's next step.",
+            "general",
+          ),
         ],
       },
       {
         focusEn: "Catch-up and consistency",
         focusMn: "Нөхөлт ба тогтвортой байдал",
         tasks: [
-          fallbackTask("Small consistency win", "Do one smaller task that keeps momentum alive.", 25, "Complete one easy win.", "general"),
+          fallbackTask(
+            "Small consistency win",
+            "Do one smaller task that keeps momentum alive.",
+            25,
+            "Complete one easy win.",
+            "general",
+          ),
         ],
       },
     ],

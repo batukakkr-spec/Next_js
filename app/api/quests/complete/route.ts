@@ -68,9 +68,7 @@ export async function POST(request: Request) {
 
     const { data: assignment, error: assignmentError } = await supabaseAdmin
       .from("user_quests")
-      .select(
-        "id, user_id, progress, status, quest:quests(id, title, xp_reward, target_value)",
-      )
+      .select("id, user_id, progress, status, quest:quests(id, title, xp_reward, target_value)")
       .eq("id", userQuestId)
       .eq("user_id", user.id)
       .eq("status", "active")

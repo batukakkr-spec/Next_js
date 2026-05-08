@@ -40,6 +40,42 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const PROFILE_CACHE_PREFIX = "xuchtrack:profile:";
+
+function readCachedAuthState(uid: string) {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.sessionStorage.getItem(`${PROFILE_CACHE_PREFIX}${uid}`);
+    if (!raw) return null;
+    return JSON.parse(raw) as { profile: Profile | null; roles: AppRole[] };
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedAuthState(uid: string, profile: Profile | null, roles: AppRole[]) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.sessionStorage.setItem(
+      `${PROFILE_CACHE_PREFIX}${uid}`,
+      JSON.stringify({ profile, roles }),
+    );
+  } catch {
+    return;
+  }
+}
+
+function clearCachedAuthState(uid?: string | null) {
+  if (typeof window === "undefined" || !uid) return;
+
+  try {
+    window.sessionStorage.removeItem(`${PROFILE_CACHE_PREFIX}${uid}`);
+  } catch {
+    return;
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -71,8 +107,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw rolesError;
       }
 
-      setProfile((p as Profile) ?? null);
-      setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+      const nextProfile = (p as Profile) ?? null;
+      const nextRoles = ((r ?? []) as { role: AppRole }[]).map((x) => x.role);
+
+      setProfile(nextProfile);
+      setRoles(nextRoles);
+      writeCachedAuthState(uid, nextProfile, nextRoles);
       lastLoadedUserIdRef.current = uid;
     })();
 
@@ -91,6 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(sess?.user ?? null);
 
       if (!sess?.user) {
+        clearCachedAuthState(lastLoadedUserIdRef.current);
         lastLoadedUserIdRef.current = null;
         setProfile(null);
         setRoles([]);
@@ -116,6 +157,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
+        const cached = readCachedAuthState(sess.user.id);
+        if (cached) {
+          setProfile(cached.profile);
+          setRoles(cached.roles);
+          lastLoadedUserIdRef.current = sess.user.id;
+          setLoading(false);
+          void loadProfileAndRoles(sess.user.id);
+          return;
+        }
+
         loadProfileAndRoles(sess.user.id).finally(() => setLoading(false));
       } else {
         setLoading(false);
@@ -141,6 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut: async () => {
         setLoading(true);
         try {
+          clearCachedAuthState(user?.id);
           await supabase.auth.signOut();
         } catch (error) {
           setLoading(false);
@@ -148,7 +200,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       },
     }),
-    [loading, profile, roles, session, user],
+    [loadProfileAndRoles, loading, profile, roles, session, user],
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

@@ -1,7 +1,7 @@
 "use client";
 
-import { Route } from "@/routes/_app.profile";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const ProfilePage = Route.component;
+const ProfilePage = createAppRoutePage(() => import("@/routes/_app.profile"), "profile");
 
 export default ProfilePage;

@@ -1,7 +1,7 @@
 "use client";
 
-import { Route } from "@/routes/login";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const LoginPage = Route.component;
+const LoginPage = createAppRoutePage(() => import("@/routes/login"), "login");
 
 export default LoginPage;

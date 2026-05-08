@@ -1,13 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const AIPage = dynamic(
-  () => import("@/routes/_app.ai").then((mod) => mod.Route.component),
-  {
-    ssr: false,
-    loading: () => <div className="p-6 text-sm text-muted-foreground">Loading AI planner…</div>,
-  },
-);
+const AIPage = createAppRoutePage(() => import("@/routes/_app.ai"), "AI planner");
 
 export default AIPage;

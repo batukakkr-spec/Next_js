@@ -240,9 +240,6 @@ export async function handleAICoachRequest(request: Request) {
     });
   } catch (error) {
     console.error("[AI_COACH_ERROR]", error);
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: getErrorStatus(error) },
-    );
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: getErrorStatus(error) });
   }
 }

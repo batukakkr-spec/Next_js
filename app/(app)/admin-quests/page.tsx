@@ -1,7 +1,10 @@
 "use client";
 
-import { Route } from "@/routes/_app.admin-quests";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const AdminQuestsPage = Route.component;
+const AdminQuestsPage = createAppRoutePage(
+  () => import("@/routes/_app.admin-quests"),
+  "admin quests",
+);
 
 export default AdminQuestsPage;

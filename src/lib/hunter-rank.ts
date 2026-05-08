@@ -62,4 +62,3 @@ export function getLevelProgressText(
 
   return `${xp ?? 0} / ${xpToNext ?? 0} XP`;
 }
-

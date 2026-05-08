@@ -1,7 +1,7 @@
 "use client";
 
-import { Route } from "@/routes/register";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const RegisterPage = Route.component;
+const RegisterPage = createAppRoutePage(() => import("@/routes/register"), "register");
 
 export default RegisterPage;

@@ -184,60 +184,60 @@ function AdminUsersPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
-              <thead className="bg-secondary/40 text-xs uppercase tracking-widest text-muted-foreground">
-                <tr>
-                  <th className="p-3 text-left">User</th>
-                  <th className="hidden p-3 text-left md:table-cell">Roles</th>
-                  <th className="p-3 text-right">Level</th>
-                  <th className="hidden p-3 text-right sm:table-cell">XP</th>
-                  <th className="p-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((entry) => (
-                  <tr key={entry.user_id} className="border-t border-border">
-                    <td className="p-3">
-                      <p className="font-semibold">{entry.display_name ?? entry.username}</p>
-                      <p className="text-xs text-muted-foreground">@{entry.username}</p>
-                    </td>
-                    <td className="hidden p-3 md:table-cell">
-                      <div className="flex flex-wrap gap-2">
-                        {entry.roles.map((role) => (
-                          <span
-                            key={role}
-                            className={`rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-widest ${
-                              role === "admin"
-                                ? "border-primary/40 bg-primary/10 text-primary-glow"
-                                : role === "moderator"
-                                  ? "border-primary/40 text-primary-glow"
-                                  : "border-border text-muted-foreground"
-                            }`}
-                          >
-                            {role}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="p-3 text-right font-bold glow-text">{entry.level}</td>
-                    <td className="hidden p-3 text-right sm:table-cell">{entry.xp}</td>
-                    <td className="space-x-2 p-3 text-right">
-                      <button
-                        onClick={() => void promote(entry.user_id, "moderator")}
-                        className="rounded border border-border px-2 py-1 text-xs hover:bg-secondary/40"
-                      >
-                        +Mod
-                      </button>
-                      <button
-                        onClick={() => void deleteUser(entry.user_id)}
-                        disabled={deletingUserId === entry.user_id || entry.user_id === user?.id}
-                        className="rounded border border-destructive/40 px-2 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-50"
-                      >
-                        {deletingUserId === entry.user_id ? "Deleting..." : "Delete"}
-                      </button>
-                    </td>
+                <thead className="bg-secondary/40 text-xs uppercase tracking-widest text-muted-foreground">
+                  <tr>
+                    <th className="p-3 text-left">User</th>
+                    <th className="hidden p-3 text-left md:table-cell">Roles</th>
+                    <th className="p-3 text-right">Level</th>
+                    <th className="hidden p-3 text-right sm:table-cell">XP</th>
+                    <th className="p-3 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
+                </thead>
+                <tbody>
+                  {users.map((entry) => (
+                    <tr key={entry.user_id} className="border-t border-border">
+                      <td className="p-3">
+                        <p className="font-semibold">{entry.display_name ?? entry.username}</p>
+                        <p className="text-xs text-muted-foreground">@{entry.username}</p>
+                      </td>
+                      <td className="hidden p-3 md:table-cell">
+                        <div className="flex flex-wrap gap-2">
+                          {entry.roles.map((role) => (
+                            <span
+                              key={role}
+                              className={`rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-widest ${
+                                role === "admin"
+                                  ? "border-primary/40 bg-primary/10 text-primary-glow"
+                                  : role === "moderator"
+                                    ? "border-primary/40 text-primary-glow"
+                                    : "border-border text-muted-foreground"
+                              }`}
+                            >
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="p-3 text-right font-bold glow-text">{entry.level}</td>
+                      <td className="hidden p-3 text-right sm:table-cell">{entry.xp}</td>
+                      <td className="space-x-2 p-3 text-right">
+                        <button
+                          onClick={() => void promote(entry.user_id, "moderator")}
+                          className="rounded border border-border px-2 py-1 text-xs hover:bg-secondary/40"
+                        >
+                          +Mod
+                        </button>
+                        <button
+                          onClick={() => void deleteUser(entry.user_id)}
+                          disabled={deletingUserId === entry.user_id || entry.user_id === user?.id}
+                          className="rounded border border-destructive/40 px-2 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-50"
+                        >
+                          {deletingUserId === entry.user_id ? "Deleting..." : "Delete"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </div>
           )}

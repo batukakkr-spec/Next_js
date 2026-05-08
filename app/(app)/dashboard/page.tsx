@@ -1,13 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { createAppRoutePage } from "@/components/app-route-page";
 
-const DashboardPage = dynamic(
-  () => import("@/routes/_app.dashboard").then((mod) => mod.Route.component),
-  {
-    ssr: false,
-    loading: () => <div className="p-6 text-sm text-muted-foreground">Loading dashboard…</div>,
-  },
-);
+const DashboardPage = createAppRoutePage(() => import("@/routes/_app.dashboard"), "dashboard");
 
 export default DashboardPage;

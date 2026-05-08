@@ -150,6 +150,33 @@ docker compose up --build
 
 `docker-compose.yml` нь `.env` файлыг автоматаар уншаад аппыг `3000:3000` порт дээр асаана.
 
+## Render Deploy
+
+Энэ repo нь `Render` дээр Docker runtime-аар deploy хийхэд бэлэн.
+
+Repo доторх `render.yaml` файлыг ашиглавал:
+
+- `Dockerfile`-оор build хийнэ
+- root path `/` дээр health check хийнэ
+- шаардлагатай environment variable-уудыг Render dashboard дээрээс бөглөнө
+
+Алхамууд:
+
+1. Repo-оо GitHub руу push хийнэ
+2. Render дээр `New +` -> `Blueprint` сонгоно
+3. GitHub repo-оо холбоно
+4. `render.yaml`-ийг Render автоматаар уншина
+5. Dashboard дээр дараах secret env-үүдийг утгатай нь бөглөнө:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_PUBLISHABLE_KEY`
+   - `OPENAI_API_KEY`
+   - `LOVABLE_API_KEY` optional
+
+`.env.example` файл нь production secret-гүй жишээ тохиргоо өгнө. Жинхэнэ key-үүдийг GitHub-д биш, зөвхөн Render дээр хадгална.
+
 ## Script-үүд
 
 ```bash

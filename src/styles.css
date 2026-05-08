@@ -107,7 +107,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: "Rajdhani", "Inter", system-ui, sans-serif;
+    font-family: var(--font-rajdhani), "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -136,7 +136,7 @@
   h2,
   h3,
   h4 {
-    font-family: "Orbitron", "Rajdhani", sans-serif;
+    font-family: var(--font-orbitron), var(--font-rajdhani), sans-serif;
     letter-spacing: 0.04em;
   }
 
@@ -144,7 +144,7 @@
   pre,
   .font-mono,
   .system-mono {
-    font-family: "Share Tech Mono", ui-monospace, monospace;
+    font-family: var(--font-share-tech-mono), ui-monospace, monospace;
   }
 
   input:-webkit-autofill,
@@ -290,7 +290,7 @@
 
   /* ── System monospace label ── */
   .system-label {
-    font-family: "Share Tech Mono", monospace;
+    font-family: var(--font-share-tech-mono), monospace;
     letter-spacing: 0.28em;
     text-transform: uppercase;
     color: oklch(0.84 0.19 304);
@@ -509,7 +509,7 @@
     background: oklch(0.55 0.24 248 / 0.07);
     font-size: 11px;
     color: oklch(0.88 0.22 215);
-    font-family: "Share Tech Mono", monospace;
+    font-family: var(--font-share-tech-mono), monospace;
     letter-spacing: 0.06em;
     transition:
       border-color 200ms,
@@ -700,7 +700,6 @@
     transform: rotate(0deg);
   }
 }
-
 
 @keyframes pulse-dot {
   0%,
