@@ -12,36 +12,36 @@ import { Send, Sparkles, Sword, Languages, CheckCircle2, Clock3 } from "lucide-r
 
 const T = {
   en: {
-    badge: "▸ AI Weekly Planner",
+    badge: "▸ AI Fitness Coach",
     subtitle: (lv?: number, xp?: number, max?: number) => `Lv.${lv} Hunter · ${xp}/${max} XP`,
     greeting:
-      "I am Jin, your AI weekly planner. Tell me your goals, constraints, and preferences, and I will build a personalized 7-day task plan for you.",
-    placeholder: "Tell Jin what kind of 7-day plan you want…",
+      "I am Jin, your elite AI fitness coach. Tell me your goal, training level, available equipment, weak points, schedule, and recovery constraints, and I will build a sharp 7-day coaching plan for you.",
+    placeholder: "Tell Jin your fitness goal, equipment, schedule, injuries, and recovery limits…",
     thinking: "Jin is thinking…",
     quick: "Quick prompts",
     prompts: [
-      "Build me a 7-day study plan for improving my English",
-      "Give me a 7-day work plan focused on shipping my project",
-      "Make me a balanced week with gym, study, and rest",
-      "I only have 2 hours a day. Build a realistic weekly task plan",
+      "Build me a 7-day hypertrophy plan for chest, shoulders, and triceps",
+      "Make me a fat-loss plan with 4 gym days and 2 cardio days",
+      "I am an intermediate lifter. Build me a realistic strength-focused week",
+      "I only have dumbbells and 45 minutes a day. Coach me for 7 days",
     ],
     added: (n: number) => `⚔ ${n} quest(s) added`,
     accepted: "Quest accepted",
     langLabel: "Language",
   },
   mn: {
-    badge: "▸ AI 7 Хоногийн Planner",
+    badge: "▸ AI Fitness Coach",
     subtitle: (lv?: number, xp?: number, max?: number) => `Lv.${lv} Анчин · ${xp}/${max} XP`,
     greeting:
-      "Сайн уу, би Жин — таны AI 7 хоногийн planner. Зорилго, хязгаарлалт, хүссэн нөхцлөө бичээрэй, би түүнд таарсан 7 хоногийн task төлөвлөгөө гаргаж өгнө.",
-    placeholder: "Жинд энэ 7 хоногт ямар plan хүсэж байгаагаа бич…",
+      "Сайн уу, би Жин — олон жилийн туршлагатай coach шиг сэтгэдэг AI fitness coach. Зорилго, туршлага, тоног төхөөрөмж, сул тал, зав, recovery-ийн нөхцлөө бичээрэй, би 7 хоногийн чанартай бэлтгэлийн төлөвлөгөө гаргаж өгнө.",
+    placeholder: "Зорилго, gym equipment, хуваарь, бэртэл, recovery нөхцлөө бич…",
     thinking: "Жин бодож байна…",
     quick: "Түргэн сонголт",
     prompts: [
-      "Англи хэлээ сайжруулах 7 хоногийн study plan гарга",
-      "Төслөө урагшлуулах 7 хоногийн ажлын plan гарга",
-      "Gym, study, амралт хосолсон тэнцвэртэй 7 хоногийн plan гарга",
-      "Өдөрт 2 цаг л байна. Бодитой weekly task plan гарга",
+      "Цээж, мөр, трицепс томруулах 7 хоногийн hypertrophy plan гарга",
+      "4 gym, 2 cardio өдөртэй fat-loss plan гарга",
+      "Би intermediate lifter. Strength төвтэй бодитой 7 хоногийн plan гарга",
+      "Надад зөвхөн dumbbell, өдөрт 45 минут байна. 7 хоног coach хий",
     ],
     added: (n: number) => `⚔ ${n} quest нэмэгдлээ`,
     accepted: "Quest хүлээн авлаа",
@@ -96,6 +96,8 @@ interface AIResponse {
   error?: string;
   reply?: string;
   plan?: WorkoutPlan;
+  source?: "openai" | "fallback";
+  providerError?: string;
   suggestions?: { quest_id: string; title: string; xp_reward: number }[];
   assigned?: string[];
 }
@@ -225,6 +227,17 @@ function AIPage() {
         throw new Error("Empty response from AI service");
       }
 
+      if (data.source === "fallback") {
+        toast.warning(
+          lang === "mn"
+            ? "OpenAI хариу өгөөгүй тул fallback coach plan ашиглалаа."
+            : "OpenAI did not return a usable result, so a fallback coach plan was used.",
+        );
+        if (data.providerError) {
+          console.warn("[AI_FALLBACK_USED]", data.providerError);
+        }
+      }
+
       setMessages((m) => [
         ...m,
         {
@@ -273,7 +286,7 @@ function AIPage() {
         </div>
         <div className="flex-1 text-center sm:text-left">
           <p className="text-xs uppercase tracking-[0.4em] text-primary-glow">{t.badge}</p>
-          <h1 className="glow-text text-2xl font-bold sm:text-3xl">JIN — AI Weekly Planner</h1>
+          <h1 className="glow-text text-2xl font-bold sm:text-3xl">JIN — Elite AI Fitness Coach</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {t.subtitle(profile?.level, profile?.xp, profile?.xp_to_next)}
           </p>

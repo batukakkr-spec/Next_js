@@ -128,6 +128,12 @@ export const workoutPlanSchema = z
 
 export type WorkoutPlan = z.infer<typeof workoutPlanSchema>;
 
+export interface GeneratedWorkoutPlanResult {
+  plan: WorkoutPlan;
+  source: "openai" | "fallback";
+  providerError?: string;
+}
+
 const workoutPlanJsonSchema = {
   type: "object",
   additionalProperties: false,
@@ -251,6 +257,20 @@ function inferRequestedCategory(user: AICoachUserContext): QuestCategory | null 
   return null;
 }
 
+function shouldCoachAsFitnessFirst(user: AICoachUserContext) {
+  const text =
+    `${user.latestRequest}\n${buildConversationTranscript(user.conversation)}`.toLowerCase();
+  if (
+    /(study|learn|exam|reading|course|leetcode|сурах|шалгалт|хичээл|career|project|ажил|төсөл)/i.test(
+      text,
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
 function buildUserContextSnapshot(user: AICoachUserContext) {
   const completedQuests = user.recentQuestHistory.filter((quest) => quest.status === "completed");
   const completionRate =
@@ -285,19 +305,28 @@ function buildUserContextSnapshot(user: AICoachUserContext) {
 
 function buildDeveloperPrompt(user: AICoachUserContext, retryInstruction?: string) {
   const contextSnapshot = buildUserContextSnapshot(user);
+  const fitnessFirst = shouldCoachAsFitnessFirst(user);
 
   return [
-    "Generate a personalized 7-day task and quest plan in JSON for Sentinel Nexus.",
+    "Generate a personalized 7-day coaching plan in JSON for Sentinel Nexus.",
+    "You are an elite fitness coach with many years of experience in strength training, hypertrophy, conditioning, recovery, exercise selection, load management, and behavior change.",
+    "Coach with the judgment of a high-level in-person trainer: practical, direct, technically sound, and focused on sustainable progress.",
     "The user's latest request contains the desired requirements. Treat those requirements as the main constraint.",
     "Rules:",
     "- The schedule must cover exactly 7 days.",
     "- Include at least 1 lighter recovery or catch-up day.",
     "- The plan must reflect the user's custom goals, constraints, and preferred theme from the latest request.",
     "- Each day should have 0-4 concrete tasks, each with a clear success metric.",
-    "- Keep text concise and practical.",
+    "- Keep text concise, practical, and coach-like rather than generic.",
+    "- Prioritize progressive overload, good exercise selection, recovery, technique quality, realistic volume, and adherence.",
+    "- Avoid unsafe advice, fake certainty, or unrealistic intensity spikes.",
+    "- If the request is ambiguous, make sensible coaching assumptions and still return a useful plan.",
     "- Suggested quest IDs must come only from the provided quest catalog.",
     "- Prefer quest categories that match the user's request when possible.",
     "- Use the requested language for all natural-language fields.",
+    fitnessFirst
+      ? "- Unless the user clearly asks for a non-fitness domain, default to a fitness-first coaching plan."
+      : "- The user asked for a non-fitness domain, but still keep the tone disciplined, performance-oriented, and coach-like.",
     retryInstruction ?? "",
     `Context:\n${JSON.stringify(contextSnapshot, null, 2)}`,
   ]
@@ -367,7 +396,7 @@ function extractOutputText(payload: unknown) {
 async function requestStructuredWorkoutPlan(user: AICoachUserContext, retryInstruction?: string) {
   const { apiKey, model } = getOpenAIConfig();
   const latestRequest =
-    user.latestRequest || "Build a 7-day weekly task plan based on my requirements.";
+    user.latestRequest || "Build me a 7-day fitness plan like an elite coach would.";
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -383,7 +412,7 @@ async function requestStructuredWorkoutPlan(user: AICoachUserContext, retryInstr
       },
       max_output_tokens: 7000,
       instructions:
-        "You are Sentinel Nexus' production AI planner. Build practical 7-day task plans from the user's custom requirements. Always respond with compact JSON that matches the schema, and do not default to fitness unless the user explicitly asks for fitness.",
+        "You are Sentinel Nexus' production AI fitness coach. Think like a top-tier coach who balances performance, hypertrophy, recovery, mobility, consistency, and injury risk. Always respond with compact JSON that matches the schema.",
       input: [
         {
           role: "developer",
@@ -466,14 +495,14 @@ function fallbackTask(
 function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
   const isMn = user.language === "mn";
   const suggestedQuestIds = buildSuggestedQuestIds(user);
-  const preferredCategory = inferRequestedCategory(user) ?? "general";
+  const preferredCategory = inferRequestedCategory(user) ?? "fitness";
   const lighterWeek = user.streakDays === 0 || user.level <= 2;
 
   const requirementSummary = user.latestRequest.trim()
     ? user.latestRequest.trim()
     : isMn
-      ? "Чиний шаардлагад тулгуурласан 7 хоногийн төлөвлөгөө"
-      : "A 7-day plan based on your requirements";
+      ? "Чиний зорилгод тааруулсан 7 хоногийн fitness төлөвлөгөө"
+      : "A 7-day fitness plan built around your goal";
 
   const categoryTaskSets: Record<
     QuestCategory | "general",
@@ -770,52 +799,58 @@ function buildFallbackWorkoutPlan(user: AICoachUserContext): WorkoutPlan {
 
   return {
     coachSummary: isMn
-      ? "Чиний бичсэн шаардлагад тулгуурлаад 7 хоногийн task төлөвлөгөө гаргалаа."
-      : "I built a 7-day task plan around the requirements you gave me.",
+      ? "Чиний зорилго, recovery, ачааллын түвшинд тулгуурлаад 7 хоногийн coach-style fitness төлөвлөгөө гаргалаа."
+      : "I built a 7-day coach-style fitness plan around your goal, recovery needs, and current workload.",
     personalizationSummary: isMn
       ? `Чиний одоогийн level ${user.level}, streak ${user.streakDays}, сүүлийн хүсэлт: "${requirementSummary}" гэдгийг ашигласан.`
       : `This plan uses your current level ${user.level}, streak ${user.streakDays}, and latest request: "${requirementSummary}".`,
     weekFocus: isMn
-      ? "Хэрэглэгчийн хүссэн шаардлагыг 7 хоногт хэрэгжүүлэх тогтвортой бүтэц"
-      : "A steady 7-day structure built around your stated requirements",
+      ? "Тогтвортой ахиц, recovery, зөв ачааллын тэнцвэртэй 7 хоногийн бүтэц"
+      : "A 7-day structure balancing progress, recovery, and smart training stress",
     difficultyAdjustment: isMn
       ? lighterWeek
-        ? "Тогтвортой байдлыг сэргээхийн тулд ачааллыг хөнгөрүүлсэн."
-        : "Хангалттай хэмнэлтэй тул ажлын хэмжээг дундаас ахисан түвшинд барьсан."
+        ? "Тогтвортой байдлыг сэргээж техник, recovery-гээ хамгаалахын тулд ачааллыг хөнгөрүүлсэн."
+        : "Сүүлийн хэмнэл боломжийн тул ачааллыг хэтрүүлэхгүйгээр дундаас ахисан түвшинд барьсан."
       : lighterWeek
-        ? "The workload is intentionally lighter to rebuild consistency."
-        : "The week keeps a moderate-to-strong pace because your recent momentum supports it.",
+        ? "The workload is intentionally lighter to rebuild consistency and protect recovery."
+        : "The week keeps a moderate-to-strong pace without exceeding what your recent momentum can realistically support.",
     recoveryStrategy: isMn
-      ? "Дунд үед нэг recovery/catch-up өдөр оруулж, хэт ачаалал үүсгэхгүй байхаар төлөвлөсөн."
-      : "A lighter catch-up day in the middle of the week helps you recover without losing momentum.",
+      ? "Дунд үед recovery өдөр оруулж, ядралт хуримтлагдахаас сэргийлээд дараагийн өдрүүдийн чанарыг хамгаалсан."
+      : "A lighter day in the middle of the week prevents fatigue from snowballing and keeps later sessions high-quality.",
     progressionRule: isMn
-      ? "Хэрэв 2 өдөр дараалан бүх task-аа дуусгавал дараагийн block-доо хугацаа эсвэл хүндрэлийг бага зэрэг нэм."
-      : "If you complete two strong days in a row, slightly increase either time or difficulty on the next work block.",
+      ? "Хэрэв 2 session дараалан чанартай гүйцэтгэл гаргавал дараагийн ачаалал дээр хугацаа, сет эсвэл хүндрэлийг бага зэрэг нэм."
+      : "If you complete two quality sessions in a row, increase either time, sets, or difficulty slightly on the next loading day.",
     warningNotes: isMn
       ? [
-          "Task-аа хэтэрхий олон болгохгүй, гүйцэтгэж чадах хэмжээнд барь.",
-          "Эхний тасралтгүй block-оо утас, чатнаас салгаж хийгээрэй.",
+          "Хэт их ачаалал нэмэхээс илүү хөдөлгөөний чанар, recovery, тогтвортой байдал чухал.",
+          "Хэрэв хүч, нойр, үе мөчний мэдрэмж муудвал ачааллаа шууд нэг түвшин бууруул.",
         ]
       : [
-          "Do not overload each day with too many goals.",
-          "Protect your first focused block from phone and chat interruptions.",
+          "Prioritize movement quality, recovery, and consistency over ego-driven volume.",
+          "If sleep, joints, or performance dip sharply, reduce load immediately for a day.",
         ],
     schedule,
     suggestedQuestIds,
   };
 }
 
-export async function generateWorkoutPlan(user: AICoachUserContext): Promise<WorkoutPlan> {
+export async function generateWorkoutPlan(
+  user: AICoachUserContext,
+): Promise<GeneratedWorkoutPlanResult> {
   const attempts = [
     undefined,
-    "Regenerate the plan. Keep the 7-day structure valid, concise, and tightly aligned to the user's requirements.",
+    "Regenerate the plan. Keep the 7-day structure valid, concise, coach-like, and tightly aligned to the user's training goal and recovery capacity.",
   ];
 
   let lastError: unknown;
 
   for (const retryInstruction of attempts) {
     try {
-      return await requestStructuredWorkoutPlan(user, retryInstruction);
+      const plan = await requestStructuredWorkoutPlan(user, retryInstruction);
+      return {
+        plan,
+        source: "openai",
+      };
     } catch (error) {
       console.error("[AI_COACH_PROVIDER_ATTEMPT_FAILED]", {
         retryInstruction,
@@ -828,11 +863,18 @@ export async function generateWorkoutPlan(user: AICoachUserContext): Promise<Wor
   if (lastError instanceof Error) {
     if (lastError instanceof AIProviderError) {
       console.warn("[AI_COACH_FALLBACK_PLAN]", lastError.message);
-      return buildFallbackWorkoutPlan(user);
+      return {
+        plan: buildFallbackWorkoutPlan(user),
+        source: "fallback",
+        providerError: lastError.message,
+      };
     }
 
     throw lastError;
   }
 
-  return buildFallbackWorkoutPlan(user);
+  return {
+    plan: buildFallbackWorkoutPlan(user),
+    source: "fallback",
+  };
 }

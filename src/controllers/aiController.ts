@@ -190,7 +190,7 @@ export async function handleAICoachRequest(request: Request) {
     );
     const activeQuests = recentQuestHistory.filter((quest) => quest.status === "active");
 
-    const plan = await generateWorkoutPlan({
+    const planResult = await generateWorkoutPlan({
       userId: user.id,
       displayName: profile?.display_name ?? "Hunter",
       level: profile?.level ?? 1,
@@ -205,6 +205,7 @@ export async function handleAICoachRequest(request: Request) {
       activeQuests,
       recentXpEvents: (xpLogResult.data ?? []).map(mapXpEvent),
     });
+    const { plan, source, providerError } = planResult;
 
     const activeQuestIds = new Set(activeQuests.map((quest) => quest.questId));
     const suggestionRows = plan.suggestedQuestIds
@@ -229,8 +230,10 @@ export async function handleAICoachRequest(request: Request) {
     }
 
     return NextResponse.json({
-      reply: plan.coachSummary,
+      reply: `${plan.coachSummary}\n\n${plan.personalizationSummary}`,
       plan,
+      source,
+      providerError,
       suggestions: suggestionRows.map((quest) => ({
         quest_id: quest.id,
         title: quest.title,
