@@ -407,9 +407,6 @@ async function requestStructuredWorkoutPlan(user: AICoachUserContext, retryInstr
     body: JSON.stringify({
       model,
       store: false,
-      reasoning: {
-        effort: "low",
-      },
       max_output_tokens: 7000,
       instructions:
         "You are Sentinel Nexus' production AI fitness coach. Think like a top-tier coach who balances performance, hypertrophy, recovery, mobility, consistency, and injury risk. Always respond with compact JSON that matches the schema.",
